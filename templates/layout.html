@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ .Title }}</title>
+    <link rel="stylesheet" href="/style.css">
+    <script src="https://unpkg.com/swup@4"></script>
+    <script src="https://unpkg.com/@swup/head-plugin@2"></script>
+    <!-- <script src="https://unpkg.com/@swup/debug-plugin@4"></script> -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <meta name="color-scheme" content="dark">
+</head>
+
+<body>
+    <aside id="nav-sidebar" class="{{ if not .NavTree }}collapsed{{ end }}">
+        <button id="nav-toggle" aria-label="Toggle navigation">☰</button>
+        <nav>
+            <ul class="nav-tree">
+                {{- range .NavTree }}
+                {{- $folder := . }}
+                {{- if eq $folder.Label "" }}
+                {{- range $page := $folder.Pages }}
+                <li>
+                    <a href="{{ $page.URL }}" data-swup="true" class="{{ if $page.Active }}active{{ end }}">
+                        {{ $page.Title }}
+                    </a>
+                </li>
+                {{- end }}
+                {{- else }}
+                <li class="folder {{ if not $folder.Open }}collapsed{{ end }}">
+                    <span class="folder-label">{{ $folder.Label }}</span>
+                    <ul>
+                        {{- range $page := $folder.Pages }}
+                        <li>
+                            <a href="{{ $page.URL }}" data-swup="true" class="{{ if $page.Active }}active{{ end }}">
+                                {{ $page.Title }}
+                            </a>
+                        </li>
+                        {{- end }}
+                    </ul>
+                </li>
+                {{- end }}
+                {{- end }}
+            </ul>
+        </nav>
+    </aside>
+
+    <main>
+        <div id="swup" class="transition-fade">
+            {{ .Content }}
+        </div>
+    </main>
+</body>
+
+<script defer>
+    const swup = new Swup({
+        native: true,
+        plugins: [
+            /*new SwupDebugPlugin(),*/
+            new SwupHeadPlugin(),
+        ],
+    });
+
+    swup.hooks.on('content:replace', () => {
+        if (window.MathJax && MathJax.typesetPromise) {
+            MathJax.typesetPromise();
+        }
+        const currentPath = window.location.pathname;
+        document.querySelectorAll('.nav-tree a').forEach(link => {
+            const isActive = (link.getAttribute('href') === currentPath);
+            link.classList.toggle('active', isActive);
+            if (isActive) {
+                const parentLi = link.closest('.folder');
+                if (parentLi) parentLi.classList.remove('collapsed');
+            }
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const sidebar = document.getElementById('nav-sidebar');
+        const toggleBtn = document.getElementById('nav-toggle');
+        const folderLabels = document.querySelectorAll('.folder > .folder-label');
+
+        toggleBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('collapsed');
+        });
+
+        folderLabels.forEach(label => {
+            label.addEventListener('click', () => {
+                const folderLi = label.parentElement;
+                folderLi.classList.toggle('collapsed');
+            });
+        });
+
+        const currentPath = window.location.pathname;
+        document.querySelectorAll('.nav-tree a').forEach(link => {
+            if (link.getAttribute('href') === currentPath) {
+                link.classList.add('active');
+                const parentLi = link.closest('.folder');
+                if (parentLi) parentLi.classList.remove('collapsed');
+            }
+        });
+    });
+</script>
+
+</html>
