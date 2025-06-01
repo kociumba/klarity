@@ -14,8 +14,9 @@
 </head>
 
 <body>
+    <button id="nav-toggle" aria-label="Toggle navigation">☰</button>
+
     <aside id="nav-sidebar" class="{{ if not .NavTree }}collapsed{{ end }}">
-        <button id="nav-toggle" aria-label="Toggle navigation">☰</button>
         <nav>
             <ul class="nav-tree">
                 {{- range .NavTree }}
@@ -46,6 +47,7 @@
             </ul>
         </nav>
     </aside>
+    <div id="sidebar-backdrop"></div>
 
     <main>
         <div id="swup" class="transition-fade">
@@ -81,11 +83,8 @@
     document.addEventListener('DOMContentLoaded', () => {
         const sidebar = document.getElementById('nav-sidebar');
         const toggleBtn = document.getElementById('nav-toggle');
+        const backdrop = document.getElementById('sidebar-backdrop');
         const folderLabels = document.querySelectorAll('.folder > .folder-label');
-
-        toggleBtn.addEventListener('click', () => {
-            sidebar.classList.toggle('collapsed');
-        });
 
         folderLabels.forEach(label => {
             label.addEventListener('click', () => {
@@ -100,6 +99,33 @@
                 link.classList.add('active');
                 const parentLi = link.closest('.folder');
                 if (parentLi) parentLi.classList.remove('collapsed');
+            }
+        });
+
+        function openSidebar() {
+            sidebar.classList.remove('collapsed');
+            backdrop.classList.add('visible');
+        }
+
+        function closeSidebar() {
+            sidebar.classList.add('collapsed');
+            backdrop.classList.remove('visible');
+        }
+
+        toggleBtn.addEventListener('click', () => {
+            if (sidebar.classList.contains('collapsed')) {
+                openSidebar();
+            } else {
+                closeSidebar();
+            }
+        });
+
+        backdrop.addEventListener('click', closeSidebar);
+
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 900) {
+                backdrop.classList.remove('visible');
+                sidebar.classList.remove('collapsed');
             }
         });
     });
