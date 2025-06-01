@@ -46,6 +46,7 @@ type DevServer struct {
 }
 
 func main() {
+	log.SetFlags(log.Llongfile)
 	ctx := kong.Parse(&CLI,
 		kong.Name("klarity"),
 		kong.Description("A very simple markdown docs generator."),
@@ -238,7 +239,7 @@ func buildKlarity(path string) error {
 
 func (c *InitCmd) Run(ctx *kong.Context) error {
 	pwd = c.Path
-	InitMarkdown(pwd)
+	// InitMarkdown(pwd)
 	return initKlarity(c.Path)
 }
 
@@ -355,7 +356,7 @@ func initKlarity(path string) error {
 		return err
 	}
 
-	fmt.Println("A Klarity project has been successfully created, get started by editing ",
+	fmt.Printf("A Klarity project has been successfully created 🚀\n\nGet started by running:\n\nklarity dev %s\n\nor editing %s\n", filepath.Base(path),
 		filepath.Join(path, "docs", "main.md"))
 
 	return nil

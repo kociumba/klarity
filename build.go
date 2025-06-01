@@ -16,6 +16,7 @@ import (
 	"github.com/yuin/goldmark/extension"
 	"github.com/yuin/goldmark/parser"
 	"github.com/yuin/goldmark/renderer/html"
+	"go.abhg.dev/goldmark/anchor"
 	"go.abhg.dev/goldmark/wikilink"
 )
 
@@ -122,6 +123,7 @@ func InitMarkdown(path string) {
 				Resolver: KlarityResolver{},
 			},
 			enclaveCallout.New(),
+			&anchor.Extender{},
 		),
 		goldmark.WithParserOptions(
 			parser.WithAutoHeadingID(),

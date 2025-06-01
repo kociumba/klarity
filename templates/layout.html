@@ -7,9 +7,8 @@
     <title>{{ .Title }}</title>
     <link rel="stylesheet" href="/style.css">
     <script src="https://unpkg.com/swup@4"></script>
-    <script src="https://unpkg.com/@swup/head-plugin@2"></script>
-    <!-- <script src="https://unpkg.com/@swup/debug-plugin@4"></script> -->
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script id="MathJax-script" data-swup-ignore async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <meta name="color-scheme" content="dark">
 </head>
 
@@ -61,7 +60,6 @@
         native: true,
         plugins: [
             /*new SwupDebugPlugin(),*/
-            new SwupHeadPlugin(),
         ],
     });
 
@@ -85,6 +83,10 @@
         const toggleBtn = document.getElementById('nav-toggle');
         const backdrop = document.getElementById('sidebar-backdrop');
         const folderLabels = document.querySelectorAll('.folder > .folder-label');
+
+        document.querySelectorAll('style').forEach(el => {
+            el.setAttribute('data-swup-ignore', '');
+        });
 
         folderLabels.forEach(label => {
             label.addEventListener('click', () => {

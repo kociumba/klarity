@@ -18,5 +18,6 @@ require (
 	github.com/gorilla/websocket v1.5.3
 	github.com/litao91/goldmark-mathjax v0.0.0-20210217064022-a43cf739a50f
 	github.com/quailyquaily/goldmark-enclave v0.1.9
+	go.abhg.dev/goldmark/anchor v0.2.0
 	go.abhg.dev/goldmark/wikilink v0.6.0
 )

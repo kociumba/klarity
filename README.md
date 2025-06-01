@@ -33,6 +33,9 @@ entry = "docs/main.md" # the file that will become index.html(the entry of the s
 
 [visual]
 theme = "rose-pine-moon" # the theme used for code, see more in the section below
+
+[dev]
+port = 5173 # accepts ports between 1024-49151
 ```
 
 Now that you have your project created, run:
@@ -44,7 +47,7 @@ klarity dev [path]
 This will open a very simple dev server hosting your docs. This dev server opens on http://localhost:5173 and live reloads while you make changes to in your markdown files. 
 
 > [!NOTE]
-> Keep in mind this dev server is pretty bare bones and doesn't yet support things like adding or removing files, this is being worked on tho.
+> Keep in mind this dev server is pretty bare bones and only partially supports file additions and deletions.
 
 When you want to build the docs for hosting use:
 

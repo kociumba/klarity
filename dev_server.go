@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
+	"slices"
 	"strings"
 	"sync"
 	"syscall"
@@ -157,6 +158,9 @@ func (d *DevServer) Run(ctx *kong.Context) error {
 	})
 
 	srv := &http.Server{Addr: "localhost:5173"}
+	if cfg.Dev.Port != 0 && cfg.Dev.Port > 1024 && cfg.Dev.Port < 49151 {
+		srv.Addr = fmt.Sprintf("localhost:%d", cfg.Dev.Port)
+	}
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
@@ -170,8 +174,36 @@ func (d *DevServer) Run(ctx *kong.Context) error {
 				if !ok {
 					return
 				}
-				if strings.HasSuffix(event.Name, ".md") || strings.HasSuffix(event.Name, ".toml") {
-					triggerRebuild()
+				isMd := strings.HasSuffix(event.Name, ".md")
+				isToml := strings.HasSuffix(event.Name, ".toml")
+
+				if isMd || isToml {
+					if event.Op&fsnotify.Create == fsnotify.Create {
+						fmt.Println("[Watcher] Detected new file:", event.Name)
+						triggerRebuild()
+					}
+					if event.Op&fsnotify.Write == fsnotify.Write {
+						fmt.Println("[Watcher] Detected modification:", event.Name)
+						triggerRebuild()
+					}
+					if event.Op&fsnotify.Remove == fsnotify.Remove {
+						fmt.Println("[Watcher] Detected deletion:", event.Name)
+						triggerRebuild()
+					}
+				}
+
+				// TODO: add a check for cfg.Doc_dirs
+				if event.Op&fsnotify.Create == fsnotify.Create {
+					info, err := os.Stat(event.Name)
+					if err == nil && info.IsDir() && slices.Contains(cfg.Doc_dirs, info.Name()) {
+						watcher.Add(event.Name)
+						filepath.Walk(event.Name, func(path string, info os.FileInfo, _ error) error {
+							if info != nil && info.IsDir() {
+								watcher.Add(path)
+							}
+							return nil
+						})
+					}
 				}
 			case err, ok := <-watcher.Errors:
 				if !ok {
@@ -185,7 +217,7 @@ func (d *DevServer) Run(ctx *kong.Context) error {
 	}()
 
 	go func() {
-		fmt.Println("[Klarity] Dev server running on http://localhost:5173")
+		fmt.Printf("[Klarity] Dev server running on http://%s\n", srv.Addr)
 		fmt.Println("[Klarity] Watching for changes...")
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("[Klarity] HTTP server error: %v", err)

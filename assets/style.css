@@ -37,9 +37,9 @@
     --radius-small: 4px;
 
     --font-primary: 'JetBrains Mono', 'Consolas', 'Menlo', monospace;
-    --font-size-base: 14px;
-    --font-size-small: 12px;
-    --font-size-large: 16px;
+    --font-size-base: 16px;
+    --font-size-small: 14px;
+    --font-size-large: 18px;
 
     --icon-color: var(--text-dim);
     --nav-item-hover-bg: var(--bg-hover);
@@ -52,6 +52,12 @@
 *::before,
 *::after {
     box-sizing: border-box;
+}
+
+.anchor {
+    color: var(--border-color-hard);
+    border-bottom: var(--border-color-hard);
+    font-size: 90%;
 }
 
 /* GitHub-style callouts */
@@ -328,6 +334,10 @@ aside#nav-sidebar::-webkit-scrollbar-thumb:hover {
     max-width: 900px;
     margin: 0 auto;
     padding: 0 20px;
+}
+
+.transition-fade {
+    animation-duration: 0.1s;
 }
 
 pre {

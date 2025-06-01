@@ -14,10 +14,15 @@ type Config struct {
 	Doc_dirs   []string     `toml:"doc_dirs"`
 	Entry      string       `toml:"entry"`
 	Visual     VisualConfig `toml:"visual"`
+	Dev        DevConfig    `toml:"dev"`
 }
 
 type VisualConfig struct {
 	Theme string `toml:"theme"`
+}
+
+type DevConfig struct {
+	Port int `toml:"port"`
 }
 
 // path is the directory klarity was called with
@@ -35,6 +40,9 @@ func CreateConfig(path string) {
 		Entry:      "docs/main.md",
 		Visual: VisualConfig{
 			Theme: "rose-pine-moon",
+		},
+		Dev: DevConfig{
+			Port: 5173,
 		},
 	})
 	if err != nil {
