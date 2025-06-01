@@ -1,0 +1,11 @@
+title = "Welcome to Klarity!"
+output_dir = "public"
+doc_dirs = ["docs"]
+entry = "docs/main.md"
+ignore_out = true
+
+[visual]
+  theme = "rose-pine-moon"
+
+[dev]
+  port = 42069

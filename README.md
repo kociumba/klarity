@@ -30,6 +30,7 @@ title = "Hello klarity!" # title used on the main page
 output_dir = "public" # where to output the built html
 doc_dirs = ["docs"] # all directories that are used during build
 entry = "docs/main.md" # the file that will become index.html(the entry of the site)
+ignore_out = true # creates a .gitignore that automatically ignores the output_dir
 
 [visual]
 theme = "rose-pine-moon" # the theme used for code, see more in the section below
@@ -56,6 +57,8 @@ klarity build [path]
 ```
 
 This builds klarity into the output dir from `klarity.toml`, this is ready for hosting using something like github pages, there is a simple entry, `index.html` in the root that should be picked up by any hosting provider like that.
+
+Klarity will by default place a `.gitignore` in the output directory that ignores everything in it, this can also be turned off in the config, if you want to commit the generated files.
 
 ## Features
 

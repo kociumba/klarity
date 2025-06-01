@@ -13,6 +13,7 @@ type Config struct {
 	Output_dir string       `toml:"output_dir"`
 	Doc_dirs   []string     `toml:"doc_dirs"`
 	Entry      string       `toml:"entry"`
+	Ignore_out bool         `toml:"ignore_out"`
 	Visual     VisualConfig `toml:"visual"`
 	Dev        DevConfig    `toml:"dev"`
 }
@@ -38,6 +39,7 @@ func CreateConfig(path string) {
 		Output_dir: "public",
 		Doc_dirs:   []string{"docs"},
 		Entry:      "docs/main.md",
+		Ignore_out: true,
 		Visual: VisualConfig{
 			Theme: "rose-pine-moon",
 		},
