@@ -11,7 +11,7 @@ Klarity tries to solve this problem by not requiring any special setup, or cloni
 To use Klarity install it with (pre built releases will be provided at a later date):
 
 ```shell
-go install https://github.com/kociumba/klarity
+go install github.com/kociumba/klarity@latest
 ```
 Then initialize Klarity project using:
 
