@@ -1,0 +1,5 @@
+pre-commit:
+  commands:
+    postcss_build:
+      files: .\assets\style.css
+      run: postcss --use autoprefixer postcss-pxtorem cssnano --no-map -o assets/style.min.css assets/style.css
