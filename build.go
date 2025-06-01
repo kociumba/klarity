@@ -7,7 +7,10 @@ import (
 	"path/filepath"
 	"strings"
 
+	"slices"
+
 	mathjax "github.com/litao91/goldmark-mathjax"
+	enclaveCallout "github.com/quailyquaily/goldmark-enclave/callout"
 	"github.com/yuin/goldmark"
 	highlighting "github.com/yuin/goldmark-highlighting/v2"
 	"github.com/yuin/goldmark/extension"
@@ -92,12 +95,7 @@ var themes = []string{
 }
 
 func isValidTheme(name string) bool {
-	for _, t := range themes {
-		if t == name {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(themes, name)
 }
 
 func InitMarkdown(path string) {
@@ -123,6 +121,7 @@ func InitMarkdown(path string) {
 			&wikilink.Extender{
 				Resolver: KlarityResolver{},
 			},
+			enclaveCallout.New(),
 		),
 		goldmark.WithParserOptions(
 			parser.WithAutoHeadingID(),

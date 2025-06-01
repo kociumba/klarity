@@ -64,6 +64,7 @@ Klarity supports a wide range of markdown features:
 - GFM(github flavoured markdown) - most gfm features are supproted like taks lists, tables or strikethrough
 - Latex - math notation with inline and block latex is supported and rendered through [mathjax](https://www.mathjax.org/)
 - raw html - inserting raw html into markdown is also fully supported
+- github callouts - more info about them here: [github gfm docs](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#alerts)
 
 The generated pages are fully static and use spa like navigation, for a smooth experience.
 

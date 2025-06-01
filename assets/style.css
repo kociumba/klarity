@@ -11,7 +11,18 @@
 
     --accent-primary: #c94e51;
     --accent-secondary: #18C5B4;
-    --accent-error: #CF6679;
+
+    --accent-important: #A45EA6;
+    --accent-note: #5F8DAF;
+    --accent-warning: #A88F4A;
+    --accent-tip: #7BAF50;
+    --accent-caution: #AE5C67;
+
+    --bg-callout-important: #3A2F40;
+    --bg-callout-note: #2F3E4A;
+    --bg-callout-warning: #403D2F;
+    --bg-callout-tip: #34402F;
+    --bg-callout-caution: #402F34;
 
     --text-main: #D4D4D4;
     --text-dim: #CECECE;
@@ -42,6 +53,81 @@
 *::after {
     box-sizing: border-box;
 }
+
+/* GitHub-style callouts */
+.custom-block[data-callout-type="github-style"] {
+    margin: 1em 0;
+    padding: 0.75em 1em;
+    background-color: var(--bg-hover);
+    border-left: 4px solid var(--accent-secondary);
+    border-radius: var(--radius-small);
+    color: var(--text-intellisense);
+}
+
+.custom-block[data-callout-type="github-style"] .custom-block-title {
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 0.5em;
+    color: var(--text-main);
+}
+
+.custom-block[data-callout-type="github-style"] .custom-block-title svg {
+    margin-right: 0.5em;
+    flex-shrink: 0;
+    color: var(--text-main);
+}
+
+/* Type-specific border colors */
+.custom-block.important[data-callout-type="github-style"] {
+    border-left-color: var(--accent-important);
+    background-color: var(--bg-callout-important);
+}
+
+.custom-block.warning[data-callout-type="github-style"] {
+    border-left-color: var(--accent-warning);
+    background-color: var(--bg-callout-warning);
+}
+
+.custom-block.info[data-callout-type="github-style"] {
+    border-left-color: var(--accent-note);
+    background-color: var(--bg-callout-note);
+}
+
+.custom-block.tip[data-callout-type="github-style"] {
+    border-left-color: var(--accent-tip);
+    background-color: var(--bg-callout-tip);
+}
+
+.custom-block.danger[data-callout-type="github-style"] {
+    border-left-color: var(--accent-caution);
+    background-color: var(--bg-callout-caution);
+}
+
+/* Inner paragraph styling */
+.custom-block[data-callout-type="github-style"] p {
+    margin: 0;
+    color: var(--text-dim);
+    line-height: 1.6;
+}
+
+/* Ensure code blocks inside callouts match overall theme */
+.custom-block[data-callout-type="github-style"] pre {
+    background-color: var(--bg-panel);
+    border: 1px solid var(--border-color-soft);
+    border-radius: var(--radius-small);
+    margin: 0.75em 0;
+}
+
+/* Adjust list styling within callouts */
+.custom-block[data-callout-type="github-style"] ul,
+.custom-block[data-callout-type="github-style"] ol {
+    margin: 0.5em 0 0.5em 1.5em;
+    padding: 0;
+    color: var(--text-dim);
+}
+
 
 html,
 body {
