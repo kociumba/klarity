@@ -58,7 +58,7 @@ This builds klarity into the output dir from `klarity.toml`, this is ready for h
 
 Klarity supports a wide range of markdown features:
 
-- wikilinks [partial support] - obsidian style `[[other_file.md]]` wiki links are mostly supported
+- wikilinks - obsidian style `[[other_file.md]]` wiki links are supported (only `!` image resolution is missing for now)
 - autolinks - things like emails or full links automatically become `<a>` in html
 - syntax highliting - by default code is highlited using the `rose-pine-moon`, this can be changed to any of these themes: [theme gallery](https://xyproto.github.io/splash/docs/all.html)
 - GFM(github flavoured markdown) - most gfm features are supproted like taks lists, tables or strikethrough

@@ -136,42 +136,53 @@ func InitMarkdown(path string) {
 
 type KlarityResolver struct{}
 
+// finally fixed the resolver, but still needs [[!]] resolution xd
 func (KlarityResolver) ResolveWikilink(n *wikilink.Node) (destination []byte, err error) {
 	if currentlyRendering == "" {
 		return nil, nil
 	}
 
 	entryAbs := filepath.Clean(filepath.Join(pwd, config.Entry))
-	currentAbs := filepath.Clean(currentlyRendering)
-	target := string(n.Target)
+	// log.Print("entry: ", entryAbs)
 
-	ext := filepath.Ext(target)
+	targetRaw := string(n.Target)
+	ext := filepath.Ext(targetRaw)
+
+	// log.Printf("raw: %s, ext: %s", targetRaw, ext)
+
+	var candidateMD string
+	baseDir := filepath.Dir(currentlyRendering)
 	if ext == "" {
-		target += ".md"
-		ext = ".md"
+		candidateMD = filepath.Join(baseDir, targetRaw+".md")
+	} else if ext == ".md" {
+		candidateMD = filepath.Join(baseDir, targetRaw)
+	} else {
+		return nil, nil // not .md link | handle like default resolver
 	}
-	if ext == ".md" {
-		target = strings.TrimSuffix(target, ".md") + ".html"
-	}
+	candidateMD = filepath.Clean(candidateMD)
 
-	entryBase := strings.TrimSuffix(filepath.Base(config.Entry), ".md")
-	targetBase := strings.TrimSuffix(filepath.Base(string(n.Target)), ".md")
-	if entryBase != "" && targetBase == entryBase {
-		target = "index.html"
+	// log.Print("candidate: ", candidateMD)
+
+	relCand, err := filepath.Rel(pwd, candidateMD)
+	if err != nil {
+		return nil, err
 	}
+	relCand = filepath.ToSlash(relCand)
+
+	// log.Print("relCandidate: ", relCand)
 
 	var dest string
-	if currentAbs == entryAbs {
-		dest = target
+	if candidateMD == entryAbs {
+		dest = "/index.html"
 	} else {
-		dest = target
+		dest = "/" + strings.TrimSuffix(relCand, ".md") + ".html"
 	}
 
 	if len(n.Fragment) > 0 {
 		dest += "#" + string(n.Fragment)
 	}
 
-	dest = filepath.ToSlash(dest)
+	// log.Printf("resolved %s\n", dest)
 	return []byte(dest), nil
 }
 
