@@ -104,7 +104,9 @@
 
         function openSidebar() {
             sidebar.classList.remove('collapsed');
-            backdrop.classList.add('visible');
+            if (window.innerWidth <= 900) {
+                backdrop.classList.add('visible');
+            }
         }
 
         function closeSidebar() {
