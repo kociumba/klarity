@@ -1,4 +1,4 @@
-module github.com/kociumba/konfig/example/klarity
+module github.com/kociumba/klarity
 
 go 1.24.2
 
