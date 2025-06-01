@@ -55,6 +55,7 @@ func (h *wsHub) broadcast(msg string) {
 
 func (d *DevServer) Run(ctx *kong.Context) error {
 	pwd = d.Path
+	InitMarkdown(pwd)
 	projectPath, err := filepath.Abs(d.Path)
 	if err != nil {
 		return fmt.Errorf("failed to resolve path: %w", err)

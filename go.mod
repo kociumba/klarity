@@ -12,8 +12,8 @@ require (
 require golang.org/x/sys v0.13.0 // indirect
 
 require (
-	github.com/alecthomas/chroma/v2 v2.2.0 // indirect
-	github.com/dlclark/regexp2 v1.7.0 // indirect
+	github.com/alecthomas/chroma/v2 v2.18.0 // indirect
+	github.com/dlclark/regexp2 v1.11.5 // indirect
 	github.com/fsnotify/fsnotify v1.9.0
 	github.com/gorilla/websocket v1.5.3
 	github.com/litao91/goldmark-mathjax v0.0.0-20210217064022-a43cf739a50f

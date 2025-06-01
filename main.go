@@ -81,6 +81,7 @@ func promptForConfirmation(prompt string) bool {
 
 func (c *BuildCmd) Run(ctx *kong.Context) error {
 	pwd = c.Path
+	InitMarkdown(pwd)
 	return buildKlarity(c.Path)
 }
 
@@ -237,6 +238,7 @@ func buildKlarity(path string) error {
 
 func (c *InitCmd) Run(ctx *kong.Context) error {
 	pwd = c.Path
+	InitMarkdown(pwd)
 	return initKlarity(c.Path)
 }
 

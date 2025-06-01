@@ -9,10 +9,15 @@ import (
 )
 
 type Config struct {
-	Title      string   `toml:"title"`
-	Output_dir string   `toml:"output_dir"`
-	Doc_dirs   []string `toml:"doc_dirs"`
-	Entry      string   `toml:"entry"`
+	Title      string       `toml:"title"`
+	Output_dir string       `toml:"output_dir"`
+	Doc_dirs   []string     `toml:"doc_dirs"`
+	Entry      string       `toml:"entry"`
+	Visual     VisualConfig `toml:"visual"`
+}
+
+type VisualConfig struct {
+	Theme string `toml:"theme"`
 }
 
 // path is the directory klarity was called with
@@ -28,6 +33,9 @@ func CreateConfig(path string) {
 		Output_dir: "public",
 		Doc_dirs:   []string{"docs"},
 		Entry:      "docs/main.md",
+		Visual: VisualConfig{
+			Theme: "rose-pine-moon",
+		},
 	})
 	if err != nil {
 		log.Fatal(err)

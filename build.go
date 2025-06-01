@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -17,27 +18,121 @@ import (
 
 var currentlyRendering string
 
-var md = goldmark.New(
-	goldmark.WithExtensions(
-		extension.GFM,
-		extension.Linkify,
-		extension.Table,
-		highlighting.NewHighlighting(
-			highlighting.WithStyle("fruity"),
+var md goldmark.Markdown
+
+// list of current chroma themes
+var themes = []string{
+	"abap",
+	"algol",
+	"algol_nu",
+	"arduino",
+	"autumn",
+	"average",
+	"base16-snazzy",
+	"borland",
+	"bw",
+	"catppuccin-frappe",
+	"catppuccin-latte",
+	"catppuccin-macchiato",
+	"catppuccin-mocha",
+	"colorful",
+	"doom-one",
+	"doom-one2",
+	"dracula",
+	"emacs",
+	"evergarden",
+	"friendly",
+	"fruity",
+	"github-dark",
+	"github",
+	"gruvbox-light",
+	"gruvbox",
+	"hr_high_contrast",
+	"hrdark",
+	"igor",
+	"lovelace",
+	"manni",
+	"modus-operandi",
+	"modus-vivendi",
+	"monokai",
+	"monokailight",
+	"murphy",
+	"native",
+	"nord",
+	"nordic",
+	"onedark",
+	"onesenterprise",
+	"paraiso-dark",
+	"paraiso-light",
+	"pastie",
+	"perldoc",
+	"pygments",
+	"rainbow_dash",
+	"rose-pine-dawn",
+	"rose-pine-moon",
+	"rose-pine",
+	"rpgle",
+	"rrt",
+	"solarized-dark",
+	"solarized-dark256",
+	"solarized-light",
+	"swapoff",
+	"tango",
+	"tokyonight-day",
+	"tokyonight-moon",
+	"tokyonight-night",
+	"tokyonight-storm",
+	"trac",
+	"vim",
+	"vs",
+	"vulcan",
+	"witchhazel",
+	"xcode-dark",
+	"xcode",
+}
+
+func isValidTheme(name string) bool {
+	for _, t := range themes {
+		if t == name {
+			return true
+		}
+	}
+	return false
+}
+
+func InitMarkdown(path string) {
+	path, err := filepath.Abs(path)
+	if err != nil {
+		log.Fatal(err)
+	}
+	c := ReadConfig(path)
+	theme := "rose-pine-moon" // default
+	if c.Visual.Theme != "" && isValidTheme(c.Visual.Theme) {
+		theme = c.Visual.Theme
+	}
+
+	md = goldmark.New(
+		goldmark.WithExtensions(
+			extension.GFM,
+			extension.Linkify,
+			extension.Table,
+			highlighting.NewHighlighting(
+				highlighting.WithStyle(theme),
+			),
+			mathjax.MathJax,
+			&wikilink.Extender{
+				Resolver: KlarityResolver{},
+			},
 		),
-		mathjax.MathJax,
-		&wikilink.Extender{
-			Resolver: KlarityResolver{},
-		},
-	),
-	goldmark.WithParserOptions(
-		parser.WithAutoHeadingID(),
-	),
-	goldmark.WithRendererOptions(
-		html.WithHardWraps(),
-		html.WithUnsafe(),
-	),
-)
+		goldmark.WithParserOptions(
+			parser.WithAutoHeadingID(),
+		),
+		goldmark.WithRendererOptions(
+			html.WithHardWraps(),
+			html.WithUnsafe(),
+		),
+	)
+}
 
 type KlarityResolver struct{}
 
