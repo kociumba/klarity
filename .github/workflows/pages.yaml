@@ -1,0 +1,34 @@
+name: Build and publish example page
+
+on:
+  push:
+    branches: ["main"]
+    tags: ["v*"]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "1.x"
+
+      - name: Install klarity
+        run: |
+          go install github.com/kociumba/klarity@latest
+
+      - name: Build example site
+        run: |
+          cd "${{ github.workspace }}"
+          klarity build example
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v6
+        with:
+          publish_dir: example/public
+          github_token: ${{ secrets.GITHUB_TOKEN }}
