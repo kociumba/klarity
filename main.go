@@ -28,6 +28,7 @@ var CLI struct {
 	Init  InitCmd   `cmd:"" help:"Initialize a new Klarity project for writing docs."`
 	Build BuildCmd  `cmd:"" help:"Build Klarity docs from a directory."`
 	Dev   DevServer `cmd:"" help:"Opens a dev local dev server for developement."`
+	Clean CleanCmd  `cmd:"" help:"cleans out all output files from a klarity project"`
 	VersionCmd
 }
 
@@ -40,11 +41,15 @@ type InitCmd struct {
 }
 
 type BuildCmd struct {
-	Path string `arg:"" name:"path" help:"The directory containing the Klarity project to build (e.g., '.' or '/path/to/project')." type:"path"`
+	Path string `arg:"" name:"path" help:"The directory containing the Klarity project to build" type:"path"`
 }
 
 type DevServer struct {
-	Path string `arg:"" name:"path" help:"Opens a dev server using the built docs (e.g., '.' or '/path/to/project')" type:"path"`
+	Path string `arg:"" name:"path" help:"The directory containing the Klarity project" type:"path"`
+}
+
+type CleanCmd struct {
+	Path string `arg:"" name:"path" help:"The directory containing the Klarity project"`
 }
 
 func main() {
@@ -142,12 +147,9 @@ func buildKlarity(path string) error {
 		html_docs[doc] = html
 	}
 
-	c.Output_dir, err = filepath.Abs(filepath.Join(path, c.Output_dir))
+	c.Output_dir, err = cleanOutputDir(path, c.Output_dir)
 	if err != nil {
 		return err
-	}
-	if err := os.RemoveAll(c.Output_dir); err != nil {
-		return fmt.Errorf("failed to remove existing output directory '%s': %w", c.Output_dir, err)
 	}
 	if err := os.MkdirAll(c.Output_dir, os.ModePerm); err != nil {
 		return fmt.Errorf("failed to create output directory '%s': %w", c.Output_dir, err)
@@ -260,6 +262,33 @@ func buildKlarity(path string) error {
 	}
 
 	return nil
+}
+
+func (c *CleanCmd) Run(ctx *kong.Context) error {
+	path, err := filepath.Abs(c.Path)
+	if err != nil {
+		return err
+	}
+	cfg := ReadConfig(path)
+	cfg.Output_dir, err = cleanOutputDir(path, cfg.Output_dir)
+	if err != nil {
+		return err
+	}
+	fmt.Println("cleaned all build artifacts from", cfg.Output_dir)
+	return nil
+}
+
+func cleanOutputDir(basePath, outputDir string) (string, error) {
+	absOutputDir, err := filepath.Abs(filepath.Join(basePath, outputDir))
+	if err != nil {
+		return "", err
+	}
+
+	if err := os.RemoveAll(absOutputDir); err != nil {
+		return "", fmt.Errorf("failed to remove existing output directory '%s': %w", absOutputDir, err)
+	}
+
+	return absOutputDir, nil
 }
 
 func (c *InitCmd) Run(ctx *kong.Context) error {
