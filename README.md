@@ -53,7 +53,7 @@ This will open a very simple dev server hosting your docs. This dev server opens
 
 When you want to build the docs for hosting, you have to do 2 things
 
-- set `base_url` in `klarity.toml` to the base url your site will be hosted on. If you are hosting klarity on guithub pages your base url will be `https://<username>.github.io/<repo name>/`
+- set `base_url` in `klarity.toml` to the base url your site will be hosted on. If you are hosting klarity on github pages your base url will be `https://<username>.github.io/<repo name>/`
 
 - run the build command to build a production version of your site:
     ```shell

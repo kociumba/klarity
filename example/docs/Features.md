@@ -32,6 +32,8 @@ Result: Visit https://klarity.example.com or email hello@example.com
 
 Code blocks are highlighted:
 
+The use the ``` syntax and both inline `codeblocks` and blocks are supported:
+
 ```go
 // hello.go
 package main

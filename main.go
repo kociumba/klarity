@@ -89,10 +89,11 @@ func (c *BuildCmd) Run(ctx *kong.Context) error {
 }
 
 type PageData struct {
-	Title   string
-	Content template.HTML
-	NavTree []*NavFolder
-	Current string
+	Title    string
+	Content  template.HTML
+	Base_URL string
+	NavTree  []*NavFolder
+	Current  string
 }
 
 type NavFolder struct {
@@ -190,10 +191,11 @@ func buildKlarity(path string) error {
 		}
 
 		data := PageData{
-			Title:   pageTitle,
-			Content: template.HTML(page),
-			NavTree: navTree,
-			Current: relURL,
+			Title:    pageTitle,
+			Content:  template.HTML(page),
+			Base_URL: normalizeURL(c.Base_URL),
+			NavTree:  navTree,
+			Current:  relURL,
 		}
 
 		for _, folder := range data.NavTree {
