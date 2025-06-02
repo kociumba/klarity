@@ -1,5 +1,7 @@
 # Klarity
 
+<img align="right" src="https://raw.githubusercontent.com/kociumba/klarity/512e21d916601b453ba78a17c6c05103f9f16932/example/favicon.svg" alt="klarity icon" width="100" height="100"/>
+
 Klarity is a simple markdown docs generator 📖
 
 Motivation for clarity came from using things like quartz 4 and gitbook, that while they have nice workflows, are unintuative and complex.
