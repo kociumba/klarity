@@ -481,7 +481,7 @@ h6 {
     color: var(--text-dim);
 }
 
-h1::before,
+/* h1::before,
 h2::before,
 h3::before {
     content: "#";
@@ -501,7 +501,7 @@ h2::before {
 h3::before {
     content: "###";
     left: -2.4em;
-}
+} */
 
 
 /* Tables */
