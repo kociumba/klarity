@@ -2,7 +2,7 @@
 
 Welcome to the documentation for **Klarity** - a simple, light-config markdown docs generator.
 
-These docs are written using Klarity itself, to see the source for them look in the [github repo](https://github.com/kociumba/klarity/example).
+These docs are written using Klarity itself, to see the source for them look in the [github repo](https://github.com/kociumba/klarity/tree/main/example).
 
 ## 🚀 Quick Start
 
@@ -23,6 +23,8 @@ These docs are written using Klarity itself, to see the source for them look in 
    Open [http://localhost:5173](http://localhost:5173) in your browser.
 
 4. **Build for production:**
+    - make sure `base_url` is set correctly in `klarity.toml`
+    - run the build command:
    ```shell
    klarity build my-docs
    ```
@@ -34,6 +36,8 @@ A default Klarity project contains:
 - `docs/main.md` - your documentation entry point
 
 ## ✨ Features
+
+For a list of features with examples look in [[Features.md]]
 
 - **Wikilinks:** Use `[[other_file.md]]` to link between docs.
 - **Autolinks:** URLs and emails are auto-linked.

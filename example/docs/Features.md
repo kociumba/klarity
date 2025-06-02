@@ -47,6 +47,17 @@ func main() {
 
 ## GFM (GitHub Flavored Markdown)
 
+```markdown
+- [x] Task lists
+- [ ] Unchecked item
+
+| Name   | Value |
+|--------|-------|
+| Klarity| 🚀    |
+
+~~Strikethrough~~
+```
+
 - [x] Task lists
 - [ ] Unchecked item
 
@@ -59,6 +70,16 @@ func main() {
 ---
 
 ## LaTeX Math
+
+```markdown
+Inline math: $E=mc^2$
+
+Block math:
+
+$$
+\int_0^\infty e^{-x^2} dx = \frac{\sqrt{\pi}}{2}
+$$
+```
 
 Inline math: $E=mc^2$
 
@@ -83,6 +104,23 @@ You can embed HTML directly:
 ---
 
 ## Callouts
+
+```markdown
+> [!NOTE]
+> This is a note callout.
+
+> [!WARNING]
+> This is a warning callout.
+
+> [!TIP]
+> Tips can be shown like this!
+
+> [!CAUTION]
+> This callout advises caution!
+
+> [!IMPORTANT]
+> This carries imprtant info.
+```
 
 > [!NOTE]
 > This is a note callout.

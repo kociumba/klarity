@@ -54,7 +54,10 @@ func (h *wsHub) broadcast(msg string) {
 	}
 }
 
+var dev_server = false
+
 func (d *DevServer) Run(ctx *kong.Context) error {
+	dev_server = true
 	pwd = d.Path
 	InitMarkdown(pwd)
 	projectPath, err := filepath.Abs(d.Path)

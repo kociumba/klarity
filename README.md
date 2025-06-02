@@ -28,6 +28,7 @@ this is all you need to get started with Klarity, `klarity.toml` contains very s
 ```toml
 title = "Hello klarity!" # title used on the main page
 output_dir = "public" # where to output the built html
+base_url = "/" # the url your site will be hosted on, something like https://kociumba.github.io/your-repo/ if using github pages
 doc_dirs = ["docs"] # all directories that are used during build
 entry = "docs/main.md" # the file that will become index.html(the entry of the site)
 ignore_out = true # creates a .gitignore that automatically ignores the output_dir
@@ -50,11 +51,14 @@ This will open a very simple dev server hosting your docs. This dev server opens
 > [!NOTE]
 > Keep in mind this dev server is pretty bare bones and only partially supports file additions and deletions.
 
-When you want to build the docs for hosting use:
+When you want to build the docs for hosting, you have to do 2 things
 
-```shell
-klarity build [path]
-```
+- set `base_url` in `klarity.toml` to the base url your site will be hosted on. If you are hosting klarity on guithub pages your base url will be `https://<username>.github.io/<repo name>/`
+
+- run the build command to build a production version of your site:
+    ```shell
+    klarity build [path]
+    ```
 
 This builds klarity into the output dir from `klarity.toml`, this is ready for hosting using something like github pages, there is a simple entry, `index.html` in the root that should be picked up by any hosting provider like that.
 

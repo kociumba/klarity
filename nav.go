@@ -13,6 +13,8 @@ func buildNavTree(root string, docs []string, docDirs []string, entry string, si
 		absDocDirs = append(absDocDirs, abs)
 	}
 
+	base := normalizeURL(ReadConfig(root).Base_URL)
+
 	entryAbs := ""
 	if entry != "" {
 		entryAbs = filepath.Clean(filepath.Join(root, entry))
@@ -26,7 +28,7 @@ func buildNavTree(root string, docs []string, docDirs []string, entry string, si
 		if entryAbs != "" && cleanPath == entryAbs {
 			folderMap[""] = append(folderMap[""], &NavPage{
 				Title: siteTitle,
-				URL:   "/",
+				URL:   base + "/",
 			})
 			continue
 		}
@@ -53,7 +55,7 @@ func buildNavTree(root string, docs []string, docDirs []string, entry string, si
 		if err != nil {
 			continue
 		}
-		url := "/" + strings.TrimSuffix(filepath.ToSlash(relToRoot), ".md") + ".html"
+		url := base + "/" + strings.TrimSuffix(filepath.ToSlash(relToRoot), ".md") + ".html"
 
 		parts := strings.Split(filepath.ToSlash(relInDocDir), "/")
 		var folderKey string
@@ -78,7 +80,7 @@ func buildNavTree(root string, docs []string, docDirs []string, entry string, si
 		var entryPage *NavPage
 		var otherPages []*NavPage
 		for _, p := range pages {
-			if p.URL == "/" {
+			if p.URL == base+"/" {
 				entryPage = p
 			} else {
 				otherPages = append(otherPages, p)
@@ -113,7 +115,6 @@ func buildNavTree(root string, docs []string, docDirs []string, entry string, si
 
 	for _, key := range keys {
 		pages := folderMap[key]
-		// Sort pages alphabetically
 		sort.Slice(pages, func(i, j int) bool {
 			return pages[i].Title < pages[j].Title
 		})

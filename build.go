@@ -142,6 +142,7 @@ func (KlarityResolver) ResolveWikilink(n *wikilink.Node) (destination []byte, er
 	if currentlyRendering == "" {
 		return nil, nil
 	}
+	base := normalizeURL(ReadConfig(pwd).Base_URL)
 
 	entryAbs := filepath.Clean(filepath.Join(pwd, config.Entry))
 	// log.Print("entry: ", entryAbs)
@@ -174,9 +175,9 @@ func (KlarityResolver) ResolveWikilink(n *wikilink.Node) (destination []byte, er
 
 	var dest string
 	if candidateMD == entryAbs {
-		dest = "/index.html"
+		dest = base + "/index.html"
 	} else {
-		dest = "/" + strings.TrimSuffix(relCand, ".md") + ".html"
+		dest = base + "/" + strings.TrimSuffix(relCand, ".md") + ".html"
 	}
 
 	if len(n.Fragment) > 0 {
@@ -185,6 +186,13 @@ func (KlarityResolver) ResolveWikilink(n *wikilink.Node) (destination []byte, er
 
 	// log.Printf("resolved %s\n", dest)
 	return []byte(dest), nil
+}
+
+func normalizeURL(url string) string {
+	if url == "/" {
+		return ""
+	}
+	return strings.TrimRight(url, "/")
 }
 
 func collectMarkdownFiles(config Config, root string) ([]string, error) {

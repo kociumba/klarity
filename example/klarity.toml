@@ -1,5 +1,6 @@
 title = "Welcome to Klarity!"
 output_dir = "public"
+base_url = "https://kociumba.github.io/klarity/"
 doc_dirs = ["docs"]
 entry = "docs/main.md"
 ignore_out = true
