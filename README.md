@@ -1,6 +1,6 @@
 # Klarity
 
-<img align="right" src="https://raw.githubusercontent.com/kociumba/klarity/512e21d916601b453ba78a17c6c05103f9f16932/example/favicon.svg" alt="klarity icon" width="100" height="100"/>
+<img align="right" src="https://raw.githubusercontent.com/kociumba/klarity/512e21d916601b453ba78a17c6c05103f9f16932/example/favicon.svg" alt="klarity icon" width="150" height="150"/>
 
 Klarity is a simple markdown docs generator 📖
 
