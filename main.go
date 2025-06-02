@@ -4,7 +4,9 @@ import (
 	"embed"
 	"fmt"
 	"html/template"
+	"io"
 	"log"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"strings"
@@ -25,10 +27,11 @@ const appVersion = "v0.0.0"
 var pwd string
 
 var CLI struct {
-	Init  InitCmd   `cmd:"" help:"Initialize a new Klarity project for writing docs."`
-	Build BuildCmd  `cmd:"" help:"Build Klarity docs from a directory."`
-	Dev   DevServer `cmd:"" help:"Opens a dev local dev server for developement."`
-	Clean CleanCmd  `cmd:"" help:"cleans out all output files from a klarity project"`
+	Init   InitCmd   `cmd:"" help:"Initialize a new Klarity project for writing docs."`
+	Build  BuildCmd  `cmd:"" help:"Build Klarity docs from a directory."`
+	Dev    DevServer `cmd:"" help:"Opens a dev local dev server for developement."`
+	Clean  CleanCmd  `cmd:"" help:"Cleans out all output files from a klarity project"`
+	Doctor DoctorCmd `cmd:"" help:"Diagnoses potential issues in a klarity project"`
 	VersionCmd
 }
 
@@ -50,6 +53,59 @@ type DevServer struct {
 
 type CleanCmd struct {
 	Path string `arg:"" name:"path" help:"The directory containing the Klarity project"`
+}
+
+type DoctorCmd struct {
+	Path string `arg:"" name:"paht" help:"The directory containing the Klarity project"`
+}
+
+func (c *DoctorCmd) Run(ctx *kong.Context) error {
+	path, err := filepath.Abs(c.Path)
+	if err != nil {
+		return err
+	}
+	cfg := ReadConfig(path)
+
+	if cfg.Base_URL == "/" || cfg.Base_URL == "" {
+		slog.Warn("the base_url is not configured for distribution")
+	}
+
+	if cfg.Entry == "" {
+		slog.Error("no entry file configured")
+	}
+
+	if len(cfg.Doc_dirs) <= 0 {
+		slog.Error("no doc directories configured")
+	}
+
+	icons, err := validateFavicons(path)
+	if err != nil {
+		return err
+	}
+
+	if len(icons) == 0 {
+		slog.Warn("no favicon detected in the root of the project")
+	} else if len(icons) > 1 {
+		slog.Warn("multiple favicons detected with different extensions", "favicons", icons)
+	}
+
+	return nil
+}
+
+func validateFavicons(path string) ([]string, error) {
+	var faviconExtList = []string{".ico", ".png", ".svg", ".gif", ".apng", ".jpg"}
+	foundFavicons := []string{}
+
+	for _, ext := range faviconExtList {
+		faviconPath := filepath.Join(path, fmt.Sprintf("favicon%s", ext))
+		if _, err := os.Stat(faviconPath); err == nil {
+			foundFavicons = append(foundFavicons, faviconPath)
+		} else if !os.IsNotExist(err) {
+			return nil, fmt.Errorf("error checking for favicon %s: %w", faviconPath, err)
+		}
+	}
+
+	return foundFavicons, nil
 }
 
 func main() {
@@ -94,11 +150,13 @@ func (c *BuildCmd) Run(ctx *kong.Context) error {
 }
 
 type PageData struct {
-	Title    string
-	Content  template.HTML
-	Base_URL string
-	NavTree  []*NavFolder
-	Current  string
+	Title       string
+	Content     template.HTML
+	Base_URL    string
+	FaviconPath string
+	FavExt      string
+	NavTree     []*NavFolder
+	Current     string
 }
 
 type NavFolder struct {
@@ -131,6 +189,21 @@ func buildKlarity(path string) error {
 	}
 
 	navTree := buildNavTree(path, docs, c.Doc_dirs, c.Entry, c.Title)
+
+	var faviconPath string
+	icons, err := validateFavicons(path)
+	if err != nil {
+		return err
+	}
+
+	if len(icons) > 1 {
+		// return fmt.Errorf("more than one valid favicon found")
+	} else {
+		if len(icons) == 0 {
+		} else {
+			faviconPath = filepath.Join(path, c.Output_dir, filepath.Base(icons[0])) // probably needs better picking
+		}
+	}
 
 	html_docs := make(map[string]string)
 	for _, doc := range docs {
@@ -193,11 +266,13 @@ func buildKlarity(path string) error {
 		}
 
 		data := PageData{
-			Title:    pageTitle,
-			Content:  template.HTML(page),
-			Base_URL: normalizeURL(c.Base_URL),
-			NavTree:  navTree,
-			Current:  relURL,
+			Title:       pageTitle,
+			Content:     template.HTML(page),
+			Base_URL:    normalizeURL(c.Base_URL),
+			FaviconPath: filepath.Base(faviconPath),
+			FavExt:      strings.ToLower(filepath.Ext(faviconPath)),
+			NavTree:     navTree,
+			Current:     relURL,
 		}
 
 		for _, folder := range data.NavTree {
@@ -259,6 +334,20 @@ func buildKlarity(path string) error {
 		if err != nil {
 			return fmt.Errorf("could not remove .gitignore from %s", c.Output_dir)
 		}
+	}
+
+	if faviconPath != "" {
+		dist_favion, err := os.Create(faviconPath)
+		if err != nil {
+			return err
+		}
+		defer dist_favion.Close()
+		original_favicon, err := os.Open(icons[0])
+		if err != nil {
+			return err
+		}
+		defer original_favicon.Close()
+		io.Copy(dist_favion, original_favicon)
 	}
 
 	return nil

@@ -6,6 +6,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{{ .Title }}</title>
     <link rel="stylesheet" href="{{ .Base_URL }}/style.css">
+
+    {{ if .FaviconPath }}
+    {{ $ext := .FavExt}}
+    {{ if eq $ext ".svg" }}
+    <link rel="icon" href="{{ .Base_URL }}/{{ .FaviconPath }}" type="image/svg+xml">
+    {{ else if eq $ext ".png" }}
+    <link rel="icon" href="{{ .Base_URL }}/{{ .FaviconPath }}" type="image/png">
+    {{ else if eq $ext ".jpg" }}
+    <link rel="icon" href="{{ .Base_URL }}/{{ .FaviconPath }}" type="image/jpeg">
+    {{ else }}
+    <!-- default to ico/x-icon for .ico, .gif, .apng, etc. -->
+    <link rel="icon" href="{{ .Base_URL }}/{{ .FaviconPath }}" type="image/x-icon">
+    {{ end }}
+    {{ end }}
+
     <script src="https://unpkg.com/swup@4"></script>
     <script id="MathJax-script" data-swup-ignore async
         src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
