@@ -33,11 +33,13 @@ entry = "docs/main.md"
     > This is also required if you want to host on something like giuthub pages
 - **ignore_out**: If `true`, Klarity will create a `.gitignore` in the output directory to ignore built files.  
   - Set to `false` if you want to commit the output.
-- **[visual] theme**: Code highlighting theme.  
-  - Default: `"rose-pine-moon"`.  
-  - See [theme gallery](https://xyproto.github.io/splash/docs/all.html) for options.
+- **[visual]**
+  - **theme**: Code highlighting theme.  
+    - Default: `"rose-pine-moon"`.  
+    - See [theme gallery](https://xyproto.github.io/splash/docs/all.html) for options.
     > [!NOTE]
     > Background colors of those themes are not used for the sake consistency
+  - **use_spa**: turn on or off single page navigation, it is highly recommended to keep this `true` since most of the testing it done with it, and [swup](https://swup.js.org/) which enables this behaviour isn't a big dependency.
 - **[dev] port**: Port for the dev server.  
   - Default: `5173`.  
   - Must be between 1024-49151.
@@ -56,6 +58,7 @@ ignore_out = true
 
 [visual]
 theme = "rose-pine-moon"
+use_spa = true
 
 [dev]
 port = 42069
@@ -67,4 +70,4 @@ port = 42069
 
 - If you change `output_dir`, update your deployment scripts accordingly.
 - Always set `base_url` to match your hosting path for correct link resolution.
-- The `[visual]` and `[dev]` sections are optional and can be omitted for defaults.
+- It is recommended to keep `visial.use_spa` at `true` since Klarity is mostly tested with it enabled.

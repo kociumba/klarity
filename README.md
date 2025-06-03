@@ -37,6 +37,7 @@ ignore_out = true # creates a .gitignore that automatically ignores the output_d
 
 [visual]
 theme = "rose-pine-moon" # the theme used for code, see more in the section below
+use_spa = true # uses swup to provide spa navigation on the generated site
 
 [dev]
 port = 5173 # accepts ports between 1024-49151

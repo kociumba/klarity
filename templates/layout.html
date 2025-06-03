@@ -5,6 +5,24 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{{ .Title }}</title>
+
+    <script>
+        // prevents animations when loading sidebar state
+        (function () {
+            if (localStorage.getItem('sidebarCollapsed') === 'true') {
+                document.documentElement.classList.add('init-sidebar-collapsed');
+                var css = '\
+                    html.init-sidebar-collapsed aside#nav-sidebar { transform: translateX(calc(-1 * var(--sidebar-width))); transition: none !important; } \
+                    html.init-sidebar-collapsed main { margin-left: var(--sidebar-collapsed-width); transition: none !important; } \
+                    html.init-sidebar-collapsed #sidebar-backdrop { display: none !important; opacity: 0 !important; transition: none !important; }';
+                var s = document.createElement('style');
+                s.type = 'text/css';
+                s.appendChild(document.createTextNode(css));
+                document.head.appendChild(s);
+            }
+        })();
+    </script>
+
     <link rel="stylesheet" href="{{ .Base_URL }}/style.css">
 
     {{ if .FaviconPath }}
@@ -21,7 +39,10 @@
     {{ end }}
     {{ end }}
 
+    {{ if .SPA }}
     <script src="https://unpkg.com/swup@4"></script>
+    {{ end }}
+
     <script id="MathJax-script" data-swup-ignore async
         src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <meta name="color-scheme" content="dark">
@@ -70,6 +91,7 @@
     </main>
 </body>
 
+{{ if .SPA }}
 <script defer>
     const swup = new Swup({
         native: true,
@@ -92,12 +114,57 @@
             }
         });
     });
+</script>
+{{ end }}
 
+<script defer>
     document.addEventListener('DOMContentLoaded', () => {
+        document.documentElement.classList.remove('init-sidebar-collapsed'); // allow animations after load
+
         const sidebar = document.getElementById('nav-sidebar');
         const toggleBtn = document.getElementById('nav-toggle');
         const backdrop = document.getElementById('sidebar-backdrop');
         const folderLabels = document.querySelectorAll('.folder > .folder-label');
+        const navLinks = document.querySelectorAll('.nav-tree a');
+        const currentPath = window.location.pathname;
+
+        const savedSidebarState = localStorage.getItem('sidebarCollapsed');
+        if (savedSidebarState === 'true') {
+            sidebar.classList.add('collapsed');
+            backdrop.classList.remove('visible');
+        } else if (savedSidebarState === 'false') {
+            sidebar.classList.remove('collapsed');
+            if (window.innerWidth <= 900) {
+                backdrop.classList.add('visible');
+            }
+        }
+
+        let folderState = {};
+        try {
+            folderState = JSON.parse(localStorage.getItem('folderState') || '{}');
+        } catch (_) {
+            folderState = {};
+        }
+
+        folderLabels.forEach(label => {
+            const folderLi = label.parentElement;
+            const key = label.textContent.trim();
+            const isOpen = folderState[key];
+
+            if (isOpen === false) {
+                folderLi.classList.add('collapsed');
+            } else if (isOpen === true) {
+                folderLi.classList.remove('collapsed');
+            }
+        });
+
+        navLinks.forEach(link => {
+            if (link.getAttribute('href') === currentPath) {
+                link.classList.add('active');
+                const parentFolder = link.closest('.folder');
+                if (parentFolder) parentFolder.classList.remove('collapsed');
+            }
+        });
 
         document.querySelectorAll('style').forEach(el => {
             el.setAttribute('data-swup-ignore', '');
@@ -106,17 +173,11 @@
         folderLabels.forEach(label => {
             label.addEventListener('click', () => {
                 const folderLi = label.parentElement;
-                folderLi.classList.toggle('collapsed');
+                const key = label.textContent.trim();
+                const isNowCollapsed = folderLi.classList.toggle('collapsed');
+                folderState[key] = !isNowCollapsed;
+                localStorage.setItem('folderState', JSON.stringify(folderState));
             });
-        });
-
-        const currentPath = window.location.pathname;
-        document.querySelectorAll('.nav-tree a').forEach(link => {
-            if (link.getAttribute('href') === currentPath) {
-                link.classList.add('active');
-                const parentLi = link.closest('.folder');
-                if (parentLi) parentLi.classList.remove('collapsed');
-            }
         });
 
         function openSidebar() {
@@ -124,11 +185,13 @@
             if (window.innerWidth <= 900) {
                 backdrop.classList.add('visible');
             }
+            localStorage.setItem('sidebarCollapsed', 'false');
         }
 
         function closeSidebar() {
             sidebar.classList.add('collapsed');
             backdrop.classList.remove('visible');
+            localStorage.setItem('sidebarCollapsed', 'true');
         }
 
         toggleBtn.addEventListener('click', () => {
@@ -149,5 +212,6 @@
         });
     });
 </script>
+
 
 </html>

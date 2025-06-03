@@ -21,6 +21,7 @@ type Config struct {
 
 type VisualConfig struct {
 	Theme string `toml:"theme"`
+	SPA   bool   `toml:"use_spa"`
 }
 
 type DevConfig struct {
@@ -44,6 +45,7 @@ func CreateConfig(path string) {
 		Ignore_out: true,
 		Visual: VisualConfig{
 			Theme: "rose-pine-moon",
+			SPA:   true,
 		},
 		Dev: DevConfig{
 			Port: 5173,

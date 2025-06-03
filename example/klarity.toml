@@ -7,6 +7,7 @@ ignore_out = true
 
 [visual]
   theme = "rose-pine-moon"
+  use_spa = true
 
 [dev]
   port = 42069

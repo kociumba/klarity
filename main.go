@@ -155,6 +155,7 @@ type PageData struct {
 	Base_URL    string
 	FaviconPath string
 	FavExt      string
+	SPA         bool
 	NavTree     []*NavFolder
 	Current     string
 }
@@ -271,6 +272,7 @@ func buildKlarity(path string) error {
 			Base_URL:    normalizeURL(c.Base_URL),
 			FaviconPath: filepath.Base(faviconPath),
 			FavExt:      strings.ToLower(filepath.Ext(faviconPath)),
+			SPA:         c.Visual.SPA,
 			NavTree:     navTree,
 			Current:     relURL,
 		}
