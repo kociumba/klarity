@@ -21,7 +21,7 @@ SPA navigation can be disabled with `visual.use_spa = false` in the [[Config.md|
 In the `output_dir` you will always find at least:
 
 - `index.html`: the entry point of the generated site
-- `style.css`: the default built-in CSS styling *(CSS customization is in the works)*
+- `style.css`: the default built-in CSS styling *(take a look [[Theming.md|here]] for info on themeing)*
 
 If you provide a `favicon` (in any browser supported format), it will be copied to the output.
 
