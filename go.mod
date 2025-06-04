@@ -9,7 +9,7 @@ require (
 	github.com/yuin/goldmark-highlighting/v2 v2.0.0-20230729083705-37449abec8cc
 )
 
-require golang.org/x/sys v0.13.0 // indirect
+require golang.org/x/sys v0.29.0 // indirect
 
 require (
 	github.com/alecthomas/chroma/v2 v2.18.0 // indirect

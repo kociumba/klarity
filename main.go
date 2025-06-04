@@ -4,7 +4,6 @@ import (
 	"embed"
 	"fmt"
 	"html/template"
-	"io"
 	"log"
 	"log/slog"
 	"os"
@@ -155,6 +154,7 @@ type PageData struct {
 	Base_URL    string
 	FaviconPath string
 	FavExt      string
+	CustomCSS   string
 	SPA         bool
 	NavTree     []*NavFolder
 	Current     string
@@ -204,6 +204,14 @@ func buildKlarity(path string) error {
 		} else {
 			faviconPath = filepath.Join(path, c.Output_dir, filepath.Base(icons[0])) // probably needs better picking
 		}
+	}
+
+	if c.Visual.CustomCSS != "" {
+		custom, err := filepath.Abs(c.Visual.CustomCSS)
+		if err != nil {
+			return err
+		}
+		c.Visual.CustomCSS = custom
 	}
 
 	html_docs := make(map[string]string)
@@ -266,13 +274,21 @@ func buildKlarity(path string) error {
 			relURL = "/" + filepath.ToSlash(relOut)
 		}
 
+		dot_to_blank := func(path string) string {
+			if path == "." {
+				return ""
+			}
+			return path
+		}
+
 		data := PageData{
 			Title:       pageTitle,
 			Content:     template.HTML(page),
 			Base_URL:    normalizeURL(c.Base_URL),
-			FaviconPath: filepath.Base(faviconPath),
+			FaviconPath: dot_to_blank(filepath.Base(faviconPath)),
 			FavExt:      strings.ToLower(filepath.Ext(faviconPath)),
 			SPA:         c.Visual.SPA,
+			CustomCSS:   dot_to_blank(filepath.Base(c.Visual.CustomCSS)),
 			NavTree:     navTree,
 			Current:     relURL,
 		}
@@ -338,21 +354,20 @@ func buildKlarity(path string) error {
 		}
 	}
 
+	writeVarsCSS(c.Visual.Vars, c.Output_dir)
+
 	if faviconPath != "" {
-		dist_favion, err := os.Create(faviconPath)
-		if err != nil {
+		if err := CopyFile(icons[0], faviconPath); err != nil {
 			return err
 		}
-		defer dist_favion.Close()
-		original_favicon, err := os.Open(icons[0])
-		if err != nil {
-			return err
-		}
-		defer original_favicon.Close()
-		io.Copy(dist_favion, original_favicon)
 	}
 
-	writeVarsCSS(c.Visual.Vars, c.Output_dir)
+	if c.Visual.CustomCSS != "" {
+		dst := filepath.Join(c.Output_dir, filepath.Base(c.Visual.CustomCSS))
+		if err := CopyFile(c.Visual.CustomCSS, dst); err != nil {
+			return err
+		}
+	}
 
 	return nil
 }

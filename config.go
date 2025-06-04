@@ -20,9 +20,10 @@ type Config struct {
 }
 
 type VisualConfig struct {
-	Theme string     `toml:"theme"`
-	SPA   bool       `toml:"use_spa"`
-	Vars  VarsConfig `toml:"vars"`
+	Theme     string     `toml:"theme"`
+	SPA       bool       `toml:"use_spa"`
+	CustomCSS string     `toml:"custom_css"`
+	Vars      VarsConfig `toml:"vars"`
 }
 
 type VarsConfig struct {

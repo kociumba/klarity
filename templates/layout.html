@@ -31,6 +31,10 @@
     <link rel="stylesheet" href="{{ .Base_URL }}/style.css">
     <link rel="stylesheet" href="{{ .Base_URL }}/vars.css">
 
+    {{ if .CustomCSS }}
+    <link rel="stylesheet" href="{{ .Base_URL }}/{{ .CustomCSS }}">
+    {{ end }}
+
     {{ if .FaviconPath }}
     {{ $ext := .FavExt}}
     {{ if eq $ext ".svg" }}
@@ -40,7 +44,6 @@
     {{ else if eq $ext ".jpg" }}
     <link rel="icon" href="{{ .Base_URL }}/{{ .FaviconPath }}" type="image/jpeg">
     {{ else }}
-    <!-- default to ico/x-icon for .ico, .gif, .apng, etc. -->
     <link rel="icon" href="{{ .Base_URL }}/{{ .FaviconPath }}" type="image/x-icon">
     {{ end }}
     {{ end }}
