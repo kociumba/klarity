@@ -40,6 +40,7 @@ entry = "docs/main.md"
     > [!NOTE]
     > Background colors of those themes are not used for the sake consistency
   - **vars**: This is a section that allows you to theme Klarity, for more info look [[Theming.md|here]].
+  - **custom_css**: This is used to provide your own custom css file, this is an infrequent use case and only recommended if you have a lot of experience in css, for more info take a look in [[Theming.md#-custom-css|theming]].
   - **use_spa**: turn on or off single page navigation, it is highly recommended to keep this `true` since most of the testing it done with it, and [swup](https://swup.js.org/) which enables this behaviour isn't a big dependency.
 - **[dev] port**: Port for the dev server.  
   - Default: `5173`.  
