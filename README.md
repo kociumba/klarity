@@ -2,6 +2,8 @@
 
 <img align="right" src="https://raw.githubusercontent.com/kociumba/klarity/512e21d916601b453ba78a17c6c05103f9f16932/example/favicon.svg" alt="klarity icon" width="150" height="150"/>
 
+[![Klarity Wiki](https://img.shields.io/badge/Wiki-Built_with_Klarity-c94e51)](https://kociumba.github.io/klarity/)
+
 Klarity is a simple markdown docs generator 📖
 
 Motivation for clarity came from using things like quartz 4 and gitbook, that while they have nice workflows, are unintuative and complex.
@@ -66,6 +68,14 @@ When you want to build the docs for hosting, you have to do 2 things
 This builds klarity into the output dir from `klarity.toml`, this is ready for hosting using something like github pages, there is a simple entry, `index.html` in the root that should be picked up by any hosting provider like that.
 
 Klarity will by default place a `.gitignore` in the output directory that ignores everything in it, this can also be turned off in the config, if you want to commit the generated files.
+
+## Documentation
+
+The entire Klarity wiki is written _with Klarity_. You can browse it live here:  
+👉 [https://kociumba.github.io/klarity/](https://kociumba.github.io/klarity/)
+
+The source code for it is availible in the [example](./example/) directory.
+
 
 ## Features
 
