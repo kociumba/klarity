@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
+/* @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap'); */
 
 :root {
     --bg-main: #1E1E1E;
@@ -48,9 +48,7 @@
     --nav-folder-text: var(--text-dim);
 }
 
-*,
-*::before,
-*::after {
+*, *::before, *::after {
     box-sizing: border-box;
 }
 
@@ -135,8 +133,7 @@
 }
 
 
-html,
-body {
+html, body {
     margin: 0;
     padding: 0;
     background-color: var(--bg-main);
@@ -195,7 +192,7 @@ main {
     min-height: 100vh;
 }
 
-aside#nav-sidebar.collapsed+#sidebar-backdrop+main {
+aside#nav-sidebar.collapsed + #sidebar-backdrop + main {
     margin-left: var(--sidebar-collapsed-width);
 }
 
@@ -270,11 +267,11 @@ aside#nav-sidebar.collapsed+#sidebar-backdrop+main {
     color: var(--text-main);
 }
 
-.folder:not(.collapsed)>.folder-label::before {
+.folder:not(.collapsed) > .folder-label::before {
     transform: translateY(-50%) rotate(90deg);
 }
 
-.folder>ul {
+.folder > ul {
     margin: 0 0 0 15px;
     padding: 0;
     list-style: none;
@@ -283,7 +280,7 @@ aside#nav-sidebar.collapsed+#sidebar-backdrop+main {
     transition: max-height 0.2s ease-in-out;
 }
 
-.folder.collapsed>ul {
+.folder.collapsed > ul {
     max-height: 0;
 }
 
@@ -412,12 +409,7 @@ code:not(pre > code) {
     border: 1px solid var(--border-color-soft);
 }
 
-p,
-li,
-blockquote,
-table,
-ul,
-ol {
+p, li, blockquote, table, ul, ol {
     font-size: var(--font-size-base);
     color: var(--text-dim);
     margin: 1em 0;
@@ -425,8 +417,7 @@ ol {
     max-width: 700px;
 }
 
-ul,
-ol {
+ul, ol {
     padding-left: 25px;
 }
 
@@ -440,12 +431,7 @@ blockquote {
 }
 
 /* Headings */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-primary);
     font-weight: 600;
     margin-top: 2em;
@@ -475,8 +461,7 @@ h4 {
     color: var(--text-dim);
 }
 
-h5,
-h6 {
+h5, h6 {
     font-size: 1rem;
     color: var(--text-dim);
 }
@@ -517,8 +502,7 @@ table {
     overflow: hidden;
 }
 
-th,
-td {
+th, td {
     padding: 10px 15px;
     border-bottom: 1px solid var(--border-color-soft);
     text-align: left;
@@ -628,7 +612,7 @@ hr {
         margin-left: 0;
     }
 
-    aside#nav-sidebar+#sidebar-backdrop+main {}
+    aside#nav-sidebar + #sidebar-backdrop + main {}
 }
 
 @media (max-width: 900px) {
@@ -636,7 +620,7 @@ hr {
         transform: translateX(0);
     }
 
-    aside#nav-sidebar:not(.collapsed)+#sidebar-backdrop {
+    aside#nav-sidebar:not(.collapsed) + #sidebar-backdrop {
         display: block;
         opacity: 1;
     }
@@ -686,8 +670,7 @@ hr {
         max-width: 100%;
     }
 
-    html,
-    body {
+    html, body {
         font-size: 13px;
     }
 

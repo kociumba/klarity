@@ -30,7 +30,7 @@ this is all you need to get started with Klarity, `klarity.toml` contains very s
 ```toml
 title = "Hello klarity!" # title used on the main page
 output_dir = "public" # where to output the built html
-base_url = "/" # the url your site will be hosted on, something like https://kociumba.github.io/your-repo/ if using github pages
+base_url = "/" # the url your site will be hosted on, something like https://<username>.github.io/<repo>/ if using github pages
 doc_dirs = ["docs"] # all directories that are used during build
 entry = "docs/main.md" # the file that will become index.html(the entry of the site)
 ignore_out = true # creates a .gitignore that automatically ignores the output_dir

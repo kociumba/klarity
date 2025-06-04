@@ -352,6 +352,8 @@ func buildKlarity(path string) error {
 		io.Copy(dist_favion, original_favicon)
 	}
 
+	writeVarsCSS(c.Visual.Vars, c.Output_dir)
+
 	return nil
 }
 

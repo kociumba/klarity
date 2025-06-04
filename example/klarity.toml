@@ -6,8 +6,12 @@ entry = "docs/main.md"
 ignore_out = true
 
 [visual]
-  theme = "rose-pine-moon"
-  use_spa = true
+theme = "rose-pine-moon"
+use_spa = true
+
+[visual.vars]
+# bg_main = "#000"
+# accent_primary = "#0CCAD8"
 
 [dev]
-  port = 42069
+port = 42069

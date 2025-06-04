@@ -20,8 +20,22 @@ type Config struct {
 }
 
 type VisualConfig struct {
-	Theme string `toml:"theme"`
-	SPA   bool   `toml:"use_spa"`
+	Theme string     `toml:"theme"`
+	SPA   bool       `toml:"use_spa"`
+	Vars  VarsConfig `toml:"vars"`
+}
+
+type VarsConfig struct {
+	BGMain          string `toml:"bg_main"`
+	BGPanel         string `toml:"bg_panel"`
+	BGHover         string `toml:"bg_hover"`
+	BGActive        string `toml:"bg_active"`
+	BorderSoft      string `toml:"border_soft"`
+	BorderHard      string `toml:"border_hard"`
+	AccentPrimary   string `toml:"accent_primary"`
+	AccentSecondary string `toml:"accent_secondary"`
+	TextMain        string `toml:"text_main"`
+	TextDim         string `toml:"text_dim"`
 }
 
 type DevConfig struct {
