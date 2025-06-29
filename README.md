@@ -1,6 +1,6 @@
 # Klarity
 
-<img align="right" src="https://raw.githubusercontent.com/kociumba/klarity/512e21d916601b453ba78a17c6c05103f9f16932/example/favicon.svg" alt="klarity icon" width="150" height="150"/>
+<img align="right" src="https://raw.githubusercontent.com/kociumba/klarity/main/example/favicon.svg" alt="klarity icon" width="150" height="150"/>
 
 [![Klarity Wiki](https://img.shields.io/badge/Wiki-Built_with_Klarity-c94e51)](https://kociumba.github.io/klarity/)
 
