@@ -373,10 +373,18 @@ func buildKlarity(path string) error {
 	}
 
 	pagefindGenerated := false
-	if _, err := exec.LookPath("npx"); err == nil {
-		cmd := exec.Command("npx", "-y", "pagefind",
-			"--site", c.Output_dir,
-			"--output-subdir", "pagefind")
+	var pagefind []string = nil
+	if _, err := exec.LookPath("pagefind"); err == nil {
+		pagefind = []string{"pagefind"}
+	} else if _, err := exec.LookPath("npx"); err == nil {
+		pagefind = []string{"npx", "-y", "pagefind"}
+	} else {
+		slog.Warn("pagefind nor npx could be found in PATH, skipping Pagefind search index generation")
+	}
+
+	if pagefind != nil {
+		_cmd := append(pagefind, "--site", c.Output_dir, "--output-subdir", "pagefind")
+		cmd := exec.Command(_cmd[0], _cmd[1:]...)
 
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
@@ -386,8 +394,6 @@ func buildKlarity(path string) error {
 		} else {
 			slog.Warn("Pagefind failed to generate index (search will be disabled)", "error", err)
 		}
-	} else {
-		slog.Warn("npx not found in PATH, skipping Pagefind search index generation")
 	}
 
 	if pagefindGenerated {

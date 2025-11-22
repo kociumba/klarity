@@ -19,7 +19,7 @@ go install github.com/kociumba/klarity@latest
 ```
 
 > [!TIP]
-> If you want to use full page search you will also need [node.js](https://nodejs.org/en) installed, if node is not found full page search is simply disabled on the generated site.
+> If you want to use full page search you will also need the [pagefind binary](https://github.com/pagefind/pagefind/releases) or [node.js](https://nodejs.org/en) installed, if pagefind or node is not found full page search is simply disabled on the generated site.
 
 Then initialize Klarity project using:
 
