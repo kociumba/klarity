@@ -17,6 +17,10 @@ To use Klarity install it with (pre built releases will be provided at a later d
 ```shell
 go install github.com/kociumba/klarity@latest
 ```
+
+> [!TIP]
+> If you want to use full page search you will also need [node.js](https://nodejs.org/en) installed, if node is not found full page search is simply disabled on the generated site.
+
 Then initialize Klarity project using:
 
 ```shell
@@ -84,11 +88,13 @@ Klarity supports a wide range of markdown features:
 - wikilinks - obsidian style `[[other_file.md]]` wiki links are supported (only `!` image resolution is missing for now)
 - autolinks - things like emails or full links automatically become `<a>` in html
 - syntax highliting - by default code is highlited using the `rose-pine-moon`, this can be changed to any of these themes: [theme gallery](https://xyproto.github.io/splash/docs/all.html)
-- GFM(github flavoured markdown) - most gfm features are supproted like taks lists, tables or strikethrough
+- GFM(github flavoured markdown) - most gfm features are supproted like task lists, tables or strikethrough
 - Latex - math notation with inline and block latex is supported and rendered through [mathjax](https://www.mathjax.org/)
 - raw html - inserting raw html into markdown is also fully supported
 - github callouts - more info about them here: [github gfm docs](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#alerts)
 
 The generated pages are fully static and use spa like navigation, for a smooth experience.
+
+They also support full page search.
 
 This allows Klarity docs to be easely served in minutes on platforms like github pages.
