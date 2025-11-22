@@ -4,6 +4,15 @@ Explore Klarity's supported features with live examples.
 
 ---
 
+## Full Page Search
+
+If you have node installed klarity will generate a search index of the generated site with [PageFind](https://pagefind.app/)
+
+This allows the users to search for any term on the whole wiki and immidietly nvigate to it, search can be opened with `CTRL+K`
+or with the search button on the top right of the page. 
+ 
+---
+
 ## Wikilinks
 
 Link to other docs using Obsidian-style syntax:
@@ -53,9 +62,9 @@ func main() {
 - [x] Task lists
 - [ ] Unchecked item
 
-| Name   | Value |
-|--------|-------|
-| Klarity| 🚀    |
+| Name    | Value |
+| ------- | ----- |
+| Klarity | 🚀     |
 
 ~~Strikethrough~~
 ```
@@ -63,9 +72,9 @@ func main() {
 - [x] Task lists
 - [ ] Unchecked item
 
-| Name   | Value |
-|--------|-------|
-| Klarity| 🚀    |
+| Name    | Value |
+| ------- | ----- |
+| Klarity | 🚀     |
 
 ~~Strikethrough~~
 

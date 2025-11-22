@@ -7,6 +7,7 @@ import (
 	"log"
 	"log/slog"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 
@@ -149,15 +150,16 @@ func (c *BuildCmd) Run(ctx *kong.Context) error {
 }
 
 type PageData struct {
-	Title       string
-	Content     template.HTML
-	Base_URL    string
-	FaviconPath string
-	FavExt      string
-	CustomCSS   string
-	SPA         bool
-	NavTree     []*NavFolder
-	Current     string
+	Title          string
+	Content        template.HTML
+	Base_URL       string
+	FaviconPath    string
+	FavExt         string
+	CustomCSS      string
+	SPA            bool
+	NavTree        []*NavFolder
+	Current        string
+	PageFindSearch string
 }
 
 type NavFolder struct {
@@ -174,6 +176,7 @@ type NavPage struct {
 
 var tpl = template.Must(template.ParseFS(templates, "templates/layout.html"))
 var partial = template.Must(template.ParseFS(templates, "templates/partial.html"))
+var searchTpl = template.Must(template.ParseFS(templates, "templates/search.html"))
 
 var config Config
 
@@ -366,6 +369,30 @@ func buildKlarity(path string) error {
 		dst := filepath.Join(c.Output_dir, filepath.Base(c.Visual.CustomCSS))
 		if err := CopyFile(c.Visual.CustomCSS, dst); err != nil {
 			return err
+		}
+	}
+
+	pagefindGenerated := false
+	if _, err := exec.LookPath("npx"); err == nil {
+		cmd := exec.Command("npx", "-y", "pagefind",
+			"--site", c.Output_dir,
+			"--output-subdir", "pagefind")
+
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		if err := cmd.Run(); err == nil {
+			pagefindGenerated = true
+			fmt.Println("Pagefind search index generated")
+		} else {
+			slog.Warn("Pagefind failed to generate index (search will be disabled)", "error", err)
+		}
+	} else {
+		slog.Warn("npx not found in PATH, skipping Pagefind search index generation")
+	}
+
+	if pagefindGenerated {
+		if err := injectSearchUI(c.Output_dir, normalizeURL(c.Base_URL)); err != nil {
+			slog.Error("Failed to inject search UI (search disabled)", "error", err)
 		}
 	}
 

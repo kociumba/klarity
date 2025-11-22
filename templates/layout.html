@@ -61,6 +61,11 @@
     <button id="nav-toggle" aria-label="Toggle navigation">☰</button>
 
     <aside id="nav-sidebar" class="{{ if not .NavTree }}collapsed{{ end }}">
+
+        <div id="sidebar-search-placeholder">
+            <div id="search"></div>
+        </div>
+
         <nav>
             <ul class="nav-tree">
                 {{- range .NavTree }}
