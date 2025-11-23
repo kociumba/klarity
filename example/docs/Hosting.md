@@ -41,7 +41,7 @@ This will generate static HTML in the output directory (default: `public`).
 
 Klarity includes a sample workflow at [`.github/workflows/pages.yaml`](https://github.com/kociumba/klarity/blob/main/.github/workflows/pages.yaml)
 
-This is a bre bones example deploy script you can use to deploy your Klarity site to github pages, using github actions (this workflow assumes your repo is the root of your Klarity project):
+This is a bare bones example deploy script you can use to deploy your Klarity site to github pages, using github actions (this workflow assumes your repo is the root of your Klarity project):
 ```yaml
 name: Build and deploy Klarity page
 
@@ -95,6 +95,8 @@ jobs:
 ```
 
 This workflow will build and deploy your docs automatically on every push to `main`.
+
+This workflow is also fully compatible with generating full page search for your build, since node is always pre installed on github actions runners.
 
 ---
 
