@@ -32,6 +32,11 @@ func injectSearchUI(outputDir, baseURL string) error {
 			return nil
 		}
 
+		// TODO: also hardcode editor.html exclusion here
+		if filepath.Base(path) == "editor.html" {
+			return nil
+		}
+
 		content, err := os.ReadFile(path)
 		if err != nil {
 			return err

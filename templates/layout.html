@@ -100,6 +100,13 @@
 
     <main>
         <div id="swup" class="transition-fade">
+            {{ if .EditorEnabled }}
+            <div class="page-actions" data-pagefind-ignore="all">
+                <a href="{{ .Base_URL }}/editor.html?file={{ .SourcePath }}" target="_blank" class="edit-btn">
+                    ✎ Edit this Page
+                </a>
+            </div>
+            {{ end }}
             {{ .Content }}
         </div>
     </main>

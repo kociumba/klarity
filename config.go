@@ -17,6 +17,7 @@ type Config struct {
 	Ignore_out bool         `toml:"ignore_out"`
 	Visual     VisualConfig `toml:"visual"`
 	Dev        DevConfig    `toml:"dev"`
+	Editor     EditorConfig `toml:"editor"`
 }
 
 type VisualConfig struct {
@@ -43,6 +44,10 @@ type DevConfig struct {
 	Port int `toml:"port"`
 }
 
+type EditorConfig struct {
+	Enable bool `toml:"enable_editor"`
+}
+
 // path is the directory klarity was called with
 func CreateConfig(path string) {
 	f, err := os.Create(filepath.Join(path, "klarity.toml"))
@@ -65,6 +70,9 @@ func CreateConfig(path string) {
 		Dev: DevConfig{
 			Port: 5173,
 		},
+		Editor: EditorConfig{
+			Enable: true,
+		},
 	})
 	if err != nil {
 		log.Fatal(err)
@@ -77,7 +85,7 @@ func CreateConfig(path string) {
 func ReadConfig(path string) Config {
 	b, err := os.ReadFile(filepath.Join(path, "klarity.toml"))
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal(err, " ", filepath.Join(path, "klarity.toml"))
 	}
 
 	var c Config

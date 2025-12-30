@@ -13,6 +13,7 @@ require golang.org/x/sys v0.29.0 // indirect
 
 require (
 	github.com/alecthomas/chroma/v2 v2.18.0 // indirect
+	github.com/bluekeyes/go-gitdiff v0.8.1
 	github.com/dlclark/regexp2 v1.11.5 // indirect
 	github.com/fsnotify/fsnotify v1.9.0
 	github.com/gorilla/websocket v1.5.3

@@ -1,9 +1,12 @@
 package main
 
 import (
+	"bytes"
 	"embed"
+	"errors"
 	"fmt"
 	"html/template"
+	"io"
 	"log"
 	"log/slog"
 	"os"
@@ -12,6 +15,7 @@ import (
 	"strings"
 
 	"github.com/alecthomas/kong"
+	"github.com/bluekeyes/go-gitdiff/gitdiff"
 )
 
 //go:generate postcss --use autoprefixer postcss-pxtorem cssnano --no-map -o assets/style.min.css assets/style.css
@@ -32,6 +36,7 @@ var CLI struct {
 	Dev    DevServer `cmd:"" help:"Opens a dev local dev server for developement."`
 	Clean  CleanCmd  `cmd:"" help:"Cleans out all output files from a klarity project"`
 	Doctor DoctorCmd `cmd:"" help:"Diagnoses potential issues in a klarity project"`
+	Apply  ApplyCmd  `cmd:"" help:"Apply a Git patch to the Klarity project."`
 	VersionCmd
 }
 
@@ -57,6 +62,178 @@ type CleanCmd struct {
 
 type DoctorCmd struct {
 	Path string `arg:"" name:"paht" help:"The directory containing the Klarity project"`
+}
+
+type ApplyCmd struct {
+	Path  string `arg:"" name:"path" help:"The directory containing the Klarity project" type:"path"`
+	Patch string `arg:"" name:"patch" help:"The path to the patch file to apply" type:"path"`
+	Yes   bool   `name:"yes" short:"y" help:"Apply the patch without previewing or confirming."`
+}
+
+func applyPatch(projectPath string, files []*gitdiff.File, dry bool) error {
+	for _, f := range files {
+		oldPath := ""
+		if f.OldName != "" {
+			oldPath = filepath.Join(projectPath, f.OldName)
+		}
+
+		newPath := ""
+		if f.NewName != "" {
+			newPath = filepath.Join(projectPath, f.NewName)
+		}
+
+		if f.IsDelete {
+			if oldPath == "" {
+				return errors.New("invalid delete patch for file")
+			}
+			if _, err := os.Stat(oldPath); os.IsNotExist(err) {
+				return fmt.Errorf("file to delete does not exist: %s", oldPath)
+			}
+			if !dry {
+				if err := os.Remove(oldPath); err != nil {
+					return fmt.Errorf("failed to delete %s: %w", oldPath, err)
+				}
+			}
+			continue
+		}
+
+		if newPath == "" {
+			return errors.New("no target path for patch")
+		}
+
+		var src io.ReaderAt
+		var srcFile *os.File
+		var err error
+		if !f.IsNew {
+			if oldPath == "" {
+				return errors.New("no source for non-new patch")
+			}
+			srcFile, err = os.Open(oldPath)
+			if err != nil {
+				return fmt.Errorf("failed to open %s: %w", oldPath, err)
+			}
+			src = srcFile
+		}
+
+		if !dry {
+			if err := os.MkdirAll(filepath.Dir(newPath), os.ModePerm); err != nil {
+				if srcFile != nil {
+					srcFile.Close()
+				}
+				return err
+			}
+		}
+
+		var output io.Writer
+		var tempFile *os.File
+		var tempName string
+		if dry {
+			var buf bytes.Buffer
+			output = &buf
+		} else {
+			tempFile, err = os.CreateTemp(filepath.Dir(newPath), "gitdiff_apply_*")
+			if err != nil {
+				if srcFile != nil {
+					srcFile.Close()
+				}
+				return err
+			}
+			tempName = tempFile.Name()
+			output = tempFile
+		}
+
+		if err := gitdiff.Apply(output, src, f); err != nil {
+			if srcFile != nil {
+				srcFile.Close()
+			}
+			if !dry {
+				tempFile.Close()
+				os.Remove(tempName)
+			}
+			return fmt.Errorf("failed to apply patch to %s: %w", f.NewName, err)
+		}
+
+		if srcFile != nil {
+			srcFile.Close()
+		}
+
+		if !dry {
+			if err := tempFile.Close(); err != nil {
+				os.Remove(tempName)
+				return err
+			}
+
+			if err := os.Rename(tempName, newPath); err != nil {
+				os.Remove(tempName)
+				return err
+			}
+
+			if f.NewMode != 0 {
+				if err := os.Chmod(newPath, f.NewMode); err != nil {
+					return fmt.Errorf("failed to set mode for %s: %w", newPath, err)
+				}
+			}
+
+			if f.IsRename && oldPath != newPath {
+				if err := os.Remove(oldPath); err != nil {
+					return fmt.Errorf("failed to remove old file after rename %s: %w", oldPath, err)
+				}
+			}
+		}
+	}
+	return nil
+}
+
+func (c *ApplyCmd) Run(ctx *kong.Context) error {
+	projectPath, err := filepath.Abs(c.Path)
+	if err != nil {
+		return err
+	}
+	cfg := ReadConfig(projectPath)
+	_ = cfg
+
+	patchPath, err := filepath.Abs(c.Patch)
+	if err != nil {
+		return err
+	}
+	patchFile, err := os.Open(patchPath)
+	if err != nil {
+		return err
+	}
+	defer patchFile.Close()
+
+	patchContent, err := io.ReadAll(patchFile)
+	if err != nil {
+		return err
+	}
+
+	if _, err := patchFile.Seek(0, 0); err != nil {
+		return err
+	}
+
+	files, _, err := gitdiff.Parse(patchFile)
+	if err != nil {
+		return err
+	}
+
+	if err := applyPatch(projectPath, files, true); err != nil {
+		return fmt.Errorf("patch does not apply cleanly: %w", err)
+	}
+
+	if !c.Yes {
+		fmt.Println("Preview of changes:\n" + string(patchContent))
+		if !promptForConfirmation("Apply this patch?") {
+			fmt.Println("Patch application cancelled.")
+			return nil
+		}
+	}
+
+	if err := applyPatch(projectPath, files, false); err != nil {
+		return err
+	}
+
+	fmt.Println("Patch applied successfully")
+	return nil
 }
 
 func (c *DoctorCmd) Run(ctx *kong.Context) error {
@@ -133,11 +310,12 @@ func promptForConfirmation(prompt string) bool {
 		fmt.Printf("%s (y/n): ", prompt)
 		fmt.Scanln(&response)
 		response = strings.ToLower(string(response[0]))
-		if response == "y" || response == "Y" {
+		switch response {
+		case "y", "Y":
 			return true
-		} else if response == "n" || response == "N" {
+		case "n", "N":
 			return false
-		} else {
+		default:
 			fmt.Println("Invalid input. Please enter 'y' or 'n'.")
 		}
 	}
@@ -160,6 +338,8 @@ type PageData struct {
 	NavTree        []*NavFolder
 	Current        string
 	PageFindSearch string
+	EditorEnabled  bool
+	SourcePath     string
 }
 
 type NavFolder struct {
@@ -177,6 +357,7 @@ type NavPage struct {
 var tpl = template.Must(template.ParseFS(templates, "templates/layout.html"))
 var partial = template.Must(template.ParseFS(templates, "templates/partial.html"))
 var searchTpl = template.Must(template.ParseFS(templates, "templates/search.html"))
+var editor = template.Must(template.ParseFS(templates, "templates/editor.html"))
 
 var config Config
 
@@ -240,6 +421,44 @@ func buildKlarity(path string) error {
 		return fmt.Errorf("failed to create output directory '%s': %w", c.Output_dir, err)
 	}
 
+	if c.Editor.Enable {
+		// copy over src files
+		rawOutputDir := filepath.Join(c.Output_dir, "_klarity_raw")
+		if err := os.MkdirAll(rawOutputDir, os.ModePerm); err != nil {
+			return err
+		}
+
+		for _, doc := range docs {
+			relPath, _ := filepath.Rel(path, doc)
+			destPath := filepath.Join(rawOutputDir, relPath)
+
+			if err := os.MkdirAll(filepath.Dir(destPath), os.ModePerm); err != nil {
+				return err
+			}
+
+			if err := CopyFile(doc, destPath); err != nil {
+				return err
+			}
+		}
+
+		data := struct {
+			Base_URL string
+		}{
+			Base_URL: normalizeURL(c.Base_URL),
+		}
+
+		editorPath := filepath.Join(c.Output_dir, "editor.html")
+		editorFile, err := os.Create(editorPath)
+		if err != nil {
+			return fmt.Errorf("error creating file '%s': %w", editorPath, err)
+		}
+
+		if err := editor.Execute(editorFile, data); err != nil {
+			editorFile.Close()
+			return fmt.Errorf("error rendering template to '%s': %w", editorPath, err)
+		}
+	}
+
 	entry := filepath.Clean(filepath.Join(path, c.Entry))
 
 	for f, page := range html_docs {
@@ -285,15 +504,17 @@ func buildKlarity(path string) error {
 		}
 
 		data := PageData{
-			Title:       pageTitle,
-			Content:     template.HTML(page),
-			Base_URL:    normalizeURL(c.Base_URL),
-			FaviconPath: dot_to_blank(filepath.Base(faviconPath)),
-			FavExt:      strings.ToLower(filepath.Ext(faviconPath)),
-			SPA:         c.Visual.SPA,
-			CustomCSS:   dot_to_blank(filepath.Base(c.Visual.CustomCSS)),
-			NavTree:     navTree,
-			Current:     relURL,
+			Title:         pageTitle,
+			Content:       template.HTML(page),
+			Base_URL:      normalizeURL(c.Base_URL),
+			FaviconPath:   dot_to_blank(filepath.Base(faviconPath)),
+			FavExt:        strings.ToLower(filepath.Ext(faviconPath)),
+			SPA:           c.Visual.SPA,
+			CustomCSS:     dot_to_blank(filepath.Base(c.Visual.CustomCSS)),
+			NavTree:       navTree,
+			Current:       relURL,
+			EditorEnabled: c.Editor.Enable,
+			SourcePath:    filepath.ToSlash(relPath),
 		}
 
 		for _, folder := range data.NavTree {
@@ -339,7 +560,7 @@ func buildKlarity(path string) error {
 	if c.Ignore_out {
 		ignoreTemplate := `# THIS FILE IS AUTOMATICALLY GENERATED, DO NOT MODIFY!
 
-# This file has been automatically generated by Klarity to ingore it's build output
+# This file has been automatically generated by Klarity to ignore it's build output
 *
 `
 

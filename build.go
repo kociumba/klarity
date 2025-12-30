@@ -154,11 +154,12 @@ func (KlarityResolver) ResolveWikilink(n *wikilink.Node) (destination []byte, er
 
 	var candidateMD string
 	baseDir := filepath.Dir(currentlyRendering)
-	if ext == "" {
+	switch ext {
+	case "":
 		candidateMD = filepath.Join(baseDir, targetRaw+".md")
-	} else if ext == ".md" {
+	case ".md":
 		candidateMD = filepath.Join(baseDir, targetRaw)
-	} else {
+	default:
 		return nil, nil // not .md link | handle like default resolver
 	}
 	candidateMD = filepath.Clean(candidateMD)

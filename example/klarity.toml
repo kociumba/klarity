@@ -15,3 +15,6 @@ use_spa = true
 
 [dev]
 port = 42069
+
+[editor]
+enable_editor = true
