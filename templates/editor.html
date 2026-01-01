@@ -2,16 +2,17 @@
 <html>
 
 <head>
-    <title>Edit Page</title>
+    <title>Klarity Editor</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- <link rel="stylesheet" href="{{ .Base_URL }}/style.css"> -->
-    <link rel="stylesheet" href="{{ .Base_URL }}/vars.css">
-
-    <link rel="stylesheet" href="https://unpkg.com/easymde/dist/easymde.min.css">
-    <script src="https://unpkg.com/easymde/dist/easymde.min.js"></script>
     <script src="https://npmcdn.com/diff/dist/diff.min.js"></script>
+
+    <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
+    <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/theme/toastui-editor-dark.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/themes/prism.min.css" />
+    <link rel="stylesheet"
+        href="https://uicdn.toast.com/editor-plugin-code-syntax-highlight/latest/toastui-editor-plugin-code-syntax-highlight.min.css" />
 
     <style>
         :root {
@@ -54,6 +55,7 @@
             align-items: center;
             gap: 15px;
             flex-wrap: wrap;
+            flex-shrink: 0;
         }
 
         #file-name {
@@ -70,7 +72,7 @@
             align-items: center;
         }
 
-        button {
+        #patch-btn {
             background: var(--accent-primary);
             color: white;
             border: none;
@@ -83,16 +85,16 @@
             transition: background-color 0.2s, transform 0.1s;
         }
 
-        button:hover {
+        #patch-btn:hover {
             background: #d65d60;
             transform: translateY(-1px);
         }
 
-        button:active {
+        #patch-btn:active {
             transform: translateY(0);
         }
 
-        button:disabled {
+        #patch-btn:disabled {
             background: var(--border-color-hard);
             cursor: not-allowed;
             transform: none;
@@ -103,306 +105,14 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
-        }
-
-        /* Isolate EasyMDE styles to prevent conflicts */
-        #editor-wrapper {
-            flex: 1;
-            overflow: auto;
             background: var(--bg-main);
-            padding: 20px;
-        }
-
-        /* EasyMDE dark theme customization */
-        .EasyMDEContainer {
-            background: var(--bg-panel);
-            border: 1px solid var(--border-color-soft);
-            border-radius: var(--radius-base);
-        }
-
-        .EasyMDEContainer .CodeMirror {
-            background: var(--bg-panel);
-            color: var(--text-main);
-            font-family: var(--font-primary);
-            font-size: 14px;
-            height: auto;
-            min-height: 500px;
-            border: none;
-        }
-
-        .EasyMDEContainer .CodeMirror-cursor {
-            border-left-color: var(--text-main);
-        }
-
-        .EasyMDEContainer .CodeMirror-selected {
-            background: var(--bg-active);
-        }
-
-        .EasyMDEContainer .CodeMirror-line::selection,
-        .EasyMDEContainer .CodeMirror-line>span::selection,
-        .EasyMDEContainer .CodeMirror-line>span>span::selection {
-            background: var(--bg-active);
-        }
-
-        .EasyMDEContainer .editor-toolbar {
-            background: var(--bg-hover);
-            border-bottom: 1px solid var(--border-color-soft);
-            border-top: none;
-            border-radius: var(--radius-base) var(--radius-base) 0 0;
-        }
-
-        .EasyMDEContainer .editor-toolbar button {
-            background: transparent;
-            color: var(--text-dim);
-            border: none;
-            padding: 6px 8px;
-            border-radius: var(--radius-small);
-        }
-
-        .EasyMDEContainer .editor-toolbar button:hover {
-            background: var(--bg-active);
-            color: var(--text-main);
-            transform: none;
-        }
-
-        .EasyMDEContainer .editor-toolbar button.active {
-            background: var(--bg-active);
-            color: var(--accent-primary);
-        }
-
-        .EasyMDEContainer .editor-toolbar i.separator {
-            border-left: 1px solid var(--border-color-soft);
-            border-right: 1px solid var(--border-color-soft);
-        }
-
-        .EasyMDEContainer .CodeMirror-gutters {
-            background: var(--bg-hover);
-            border-right: 1px solid var(--border-color-soft);
-        }
-
-        .EasyMDEContainer .CodeMirror-linenumber {
-            color: var(--border-color-hard);
-        }
-
-        .EasyMDEContainer .editor-preview,
-        .EasyMDEContainer .editor-preview-side {
-            background: var(--bg-panel);
-            color: var(--text-main);
-            padding: 20px;
-        }
-
-        /* Style preview content to match Klarity */
-        .EasyMDEContainer .editor-preview h1,
-        .EasyMDEContainer .editor-preview-side h1 {
-            color: var(--accent-primary);
-            font-size: 2rem;
-            font-weight: 600;
-            margin-top: 2em;
-            margin-bottom: 0.8em;
-        }
-
-        .EasyMDEContainer .editor-preview h2,
-        .EasyMDEContainer .editor-preview-side h2 {
-            color: var(--text-main);
-            font-size: 1.6rem;
-            font-weight: 600;
-            margin-top: 2em;
-            margin-bottom: 0.8em;
-        }
-
-        .EasyMDEContainer .editor-preview h3,
-        .EasyMDEContainer .editor-preview-side h3 {
-            color: var(--text-main);
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin-top: 2em;
-            margin-bottom: 0.8em;
-        }
-
-        .EasyMDEContainer .editor-preview h4,
-        .EasyMDEContainer .editor-preview-side h4,
-        .EasyMDEContainer .editor-preview h5,
-        .EasyMDEContainer .editor-preview-side h5,
-        .EasyMDEContainer .editor-preview h6,
-        .EasyMDEContainer .editor-preview-side h6 {
-            color: var(--text-dim);
-            font-weight: 600;
-            margin-top: 2em;
-            margin-bottom: 0.8em;
-        }
-
-        .EasyMDEContainer .editor-preview p,
-        .EasyMDEContainer .editor-preview-side p,
-        .EasyMDEContainer .editor-preview li,
-        .EasyMDEContainer .editor-preview-side li {
-            color: var(--text-dim);
-            line-height: 1.7;
-            margin: 1em 0;
-        }
-
-        .EasyMDEContainer .editor-preview a,
-        .EasyMDEContainer .editor-preview-side a {
-            color: var(--accent-primary);
-            text-decoration: none;
-            border-bottom: 1px solid var(--accent-primary);
-            transition: color 0.15s, border-color 0.15s;
-        }
-
-        .EasyMDEContainer .editor-preview a:hover,
-        .EasyMDEContainer .editor-preview-side a:hover {
-            color: var(--text-main);
-            border-bottom-width: 2px;
-        }
-
-        .EasyMDEContainer .editor-preview code,
-        .EasyMDEContainer .editor-preview-side code {
-            background-color: var(--bg-hover);
-            color: var(--accent-primary);
-            border-radius: var(--radius-small);
-            padding: 0.2em 0.4em;
-            font-size: 0.9em;
-            font-family: var(--font-primary);
-            border: 1px solid var(--border-color-soft);
-        }
-
-        .EasyMDEContainer .editor-preview pre,
-        .EasyMDEContainer .editor-preview-side pre {
-            background: var(--bg-panel);
-            border: 1px solid var(--border-color-soft);
-            border-radius: var(--radius-base);
-            padding: 1em;
-            overflow-x: auto;
             position: relative;
         }
 
-        .EasyMDEContainer .editor-preview pre::before,
-        .EasyMDEContainer .editor-preview-side pre::before {
-            content: "";
-            display: block;
-            position: absolute;
-            left: -1px;
-            top: -1px;
-            bottom: -1px;
-            width: 4px;
-            border-top-left-radius: var(--radius-base);
-            border-bottom-left-radius: var(--radius-base);
-            background: var(--accent-primary);
-            opacity: 0.8;
+        #editor {
+            height: 100%;
         }
 
-        .EasyMDEContainer .editor-preview pre code,
-        .EasyMDEContainer .editor-preview-side pre code {
-            background: none;
-            border: none;
-            padding: 0;
-            color: var(--text-main);
-        }
-
-        .EasyMDEContainer .editor-preview blockquote,
-        .EasyMDEContainer .editor-preview-side blockquote {
-            color: var(--accent-secondary);
-            border-left: 4px solid var(--accent-secondary);
-            margin-left: 0;
-            padding: 0.5em 1.5em;
-            background-color: var(--bg-hover);
-            border-radius: var(--radius-small);
-        }
-
-        .EasyMDEContainer .editor-preview table,
-        .EasyMDEContainer .editor-preview-side table {
-            border-collapse: collapse;
-            width: 100%;
-            margin: 1.8em 0;
-            background-color: var(--bg-panel);
-            border: 1px solid var(--border-color-soft);
-            border-radius: var(--radius-base);
-            overflow: hidden;
-        }
-
-        .EasyMDEContainer .editor-preview th,
-        .EasyMDEContainer .editor-preview-side th,
-        .EasyMDEContainer .editor-preview td,
-        .EasyMDEContainer .editor-preview-side td {
-            padding: 10px 15px;
-            border-bottom: 1px solid var(--border-color-soft);
-            text-align: left;
-        }
-
-        .EasyMDEContainer .editor-preview th,
-        .EasyMDEContainer .editor-preview-side th {
-            color: var(--text-main);
-            background-color: var(--bg-hover);
-            font-weight: 600;
-        }
-
-        .EasyMDEContainer .editor-preview tr:hover,
-        .EasyMDEContainer .editor-preview-side tr:hover {
-            background-color: var(--bg-hover);
-        }
-
-        .EasyMDEContainer .editor-preview ul,
-        .EasyMDEContainer .editor-preview-side ul,
-        .EasyMDEContainer .editor-preview ol,
-        .EasyMDEContainer .editor-preview-side ol {
-            padding-left: 25px;
-            color: var(--text-dim);
-        }
-
-        .EasyMDEContainer .editor-preview hr,
-        .EasyMDEContainer .editor-preview-side hr {
-            border: none;
-            height: 1px;
-            background-color: var(--border-color-soft);
-            margin: 3em 0;
-            opacity: 0.5;
-        }
-
-        .EasyMDEContainer .editor-preview img,
-        .EasyMDEContainer .editor-preview-side img {
-            max-width: 100%;
-            height: auto;
-            border-radius: var(--radius-small);
-        }
-
-        .EasyMDEContainer .editor-statusbar {
-            background: var(--bg-hover);
-            color: var(--text-dim);
-            border-top: 1px solid var(--border-color-soft);
-            font-size: 12px;
-        }
-
-        /* Syntax highlighting for markdown */
-        .cm-header {
-            color: var(--accent-primary);
-        }
-
-        .cm-quote {
-            color: var(--accent-secondary);
-        }
-
-        .cm-link {
-            color: var(--accent-primary);
-        }
-
-        .cm-url {
-            color: var(--text-dim);
-        }
-
-        .cm-strong {
-            color: var(--text-main);
-            font-weight: bold;
-        }
-
-        .cm-em {
-            color: var(--text-main);
-            font-style: italic;
-        }
-
-        .cm-comment {
-            color: var(--border-color-hard);
-        }
-
-        /* Loading state */
         .loading {
             display: flex;
             align-items: center;
@@ -412,107 +122,96 @@
             font-size: 14px;
         }
 
-        /* Mobile responsive */
-        @media (max-width: 700px) {
-            .toolbar {
-                padding: 10px 15px;
-            }
+        .toastui-editor-defaultUI button:hover {
+            color: #eee !important;
+        }
 
-            #file-name {
-                font-size: 13px;
-                min-width: 150px;
-            }
-
-            button {
-                padding: 7px 12px;
-                font-size: 13px;
-            }
-
-            #editor-wrapper {
-                padding: 15px;
-            }
-
-            .EasyMDEContainer .CodeMirror {
-                font-size: 13px;
-                min-height: 400px;
-            }
+        code[class*=language-],
+        pre[class*=language-] {
+            text-shadow: none !important;
         }
     </style>
 </head>
+
+<link rel="stylesheet" href="{{ .Base_URL }}/vars.css">
 
 <body data-pagefind-ignore="all">
     <div class="toolbar">
         <span id="file-name">Loading...</span>
         <div class="toolbar-actions">
-            <button id="patch-btn" onclick="generatePatch()" disabled>Generate Patch</button>
+            <button id="patch-btn" disabled>Generate Patch</button>
         </div>
     </div>
 
     <div id="editor-container">
-        <div id="editor-wrapper">
-            <textarea id="editor"></textarea>
-        </div>
+        <div id="editor"></div>
     </div>
+
+    <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+    <script
+        src="https://uicdn.toast.com/editor-plugin-code-syntax-highlight/latest/toastui-editor-plugin-code-syntax-highlight-all.min.js"></script>
 
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const filePath = urlParams.get('file');
         const rawUrl = "_klarity_raw/" + filePath;
+
         let originalContent = "";
-        let easyMDE;
+        let editor = null;
 
         if (!filePath) {
             document.getElementById('file-name').textContent = "Error: No file specified";
-            document.getElementById('editor-wrapper').innerHTML = '<div class="loading">No file path provided in URL</div>';
+            document.getElementById('editor').innerHTML = '<div class="loading">No file path provided in URL</div>';
         } else {
-            fetch(rawUrl)
-                .then(res => {
-                    if (!res.ok) throw new Error("File not found");
-                    return res.text();
-                })
-                .then(text => {
-                    originalContent = text;
-                    document.getElementById('file-name').textContent = "Editing: " + filePath;
+            loadEditor();
+        }
 
-                    easyMDE = new EasyMDE({
-                        element: document.getElementById('editor'),
-                        initialValue: text,
-                        spellChecker: false,
-                        autofocus: true,
-                        lineNumbers: true,
-                        lineWrapping: true,
-                        indentWithTabs: false,
-                        tabSize: 4,
-                        toolbar: [
-                            "bold", "italic", "heading", "|",
-                            "quote", "unordered-list", "ordered-list", "|",
-                            "link", "image", "|",
-                            "preview", "side-by-side", "fullscreen", "|",
-                            "guide"
-                        ],
-                        status: ["lines", "words", "cursor"],
-                        placeholder: "Start writing..."
-                    });
+        async function loadEditor() {
+            try {
+                const res = await fetch(rawUrl);
+                if (!res.ok) throw new Error("File not found");
 
-                    document.getElementById('patch-btn').disabled = false;
-                })
-                .catch(err => {
-                    document.getElementById('file-name').textContent = "Error loading file";
-                    document.getElementById('editor-wrapper').innerHTML =
-                        '<div class="loading">Error: ' + err.message + '</div>';
-                    console.error("Error loading file:", err);
+                originalContent = await res.text();
+                document.getElementById('file-name').textContent = "Editing: " + filePath;
+
+                const { Editor } = toastui;
+                const { codeSyntaxHighlight } = Editor.plugin;
+
+                editor = new Editor({
+                    el: document.querySelector('#editor'),
+                    height: '100%',
+                    initialEditType: 'markdown',
+                    previewStyle: 'vertical',
+                    theme: 'dark',
+                    initialValue: originalContent,
+                    usageStatistics: false,
+                    autofocus: true,
+                    plugins: [codeSyntaxHighlight]
                 });
+
+                const patchBtn = document.getElementById('patch-btn');
+                patchBtn.disabled = false;
+                patchBtn.addEventListener('click', generatePatch);
+
+            } catch (err) {
+                document.getElementById('file-name').textContent = "Error loading file";
+                document.getElementById('editor').innerHTML =
+                    '<div class="loading">Error: ' + err.message + '</div>';
+                console.error("Error loading file:", err);
+            }
         }
 
         function generatePatch() {
-            if (!easyMDE) {
+            if (!editor) {
                 alert("Editor not initialized");
                 return;
             }
 
-            const newContent = easyMDE.value();
+            const newContent = editor.getMarkdown();
+            const normOriginal = originalContent.replace(/\r\n/g, '\n');
+            const normNew = newContent.replace(/\r\n/g, '\n');
 
-            if (newContent === originalContent) {
+            if (normNew === normOriginal) {
                 alert("No changes detected");
                 return;
             }
@@ -540,7 +239,7 @@
         }
 
         window.addEventListener('beforeunload', function (e) {
-            if (easyMDE && easyMDE.value() !== originalContent) {
+            if (editor && editor.getMarkdown() !== originalContent) {
                 e.preventDefault();
                 e.returnValue = '';
             }
