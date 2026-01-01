@@ -71,7 +71,7 @@ func CreateConfig(path string) {
 			Port: 5173,
 		},
 		Editor: EditorConfig{
-			Enable: true,
+			Enable: false,
 		},
 	})
 	if err != nil {
